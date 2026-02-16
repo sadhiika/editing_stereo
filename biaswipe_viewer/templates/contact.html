@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - StereoWipe{% endblock %}
+
+{% block head %}
+<style>
+    .contact-hero {
+        background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+        padding: 80px 40px;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .contact-hero h1 {
+        font-size: 42px;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+    }
+    
+    .contact-hero p {
+        font-size: 18px;
+        color: var(--text-secondary);
+    }
+    
+    .contact-content {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 64px 40px;
+        text-align: center;
+    }
+    
+    .contact-info {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 48px;
+        margin-bottom: 48px;
+    }
+    
+    .contact-info p {
+        font-size: 17px;
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+        line-height: 1.7;
+    }
+    
+    .contact-email {
+        display: inline-block;
+        background: var(--gradient-1);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 24px;
+        font-weight: 600;
+        margin-top: 16px;
+    }
+    
+    .contact-email:hover {
+        opacity: 0.8;
+    }
+    
+    .contact-methods {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+    
+    .contact-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 32px;
+        text-align: center;
+        transition: border-color 0.2s;
+    }
+    
+    .contact-card:hover {
+        border-color: var(--accent-primary);
+    }
+    
+    .contact-card-icon {
+        font-size: 32px;
+        margin-bottom: 16px;
+    }
+    
+    .contact-card h3 {
+        color: var(--text-primary);
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+    
+    .contact-card p {
+        color: var(--text-secondary);
+        font-size: 14px;
+    }
+    
+    .contact-card a {
+        color: var(--accent-primary);
+    }
+    
+    @media (max-width: 768px) {
+        .contact-hero {
+            padding: 60px 20px;
+        }
+        .contact-hero h1 {
+            font-size: 32px;
+        }
+        .contact-content {
+            padding: 40px 20px;
+        }
+        .contact-methods {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="contact-hero">
+    <h1>Contact Us</h1>
+    <p>We'd love to hear from you</p>
+</section>
+
+<div class="contact-content">
+    <div class="contact-info">
+        <p>For questions, feedback, collaboration inquiries, or to request a new model evaluation, reach out to us:</p>
+        <a href="mailto:research@socialprotocol.com" class="contact-email">research@socialprotocol.com</a>
+    </div>
+    
+    <div class="contact-methods">
+        <div class="contact-card">
+            <div class="contact-card-icon">🐙</div>
+            <h3>GitHub</h3>
+            <p>Open an issue or contribute to our codebase</p>
+            <a href="https://github.com/stereowipe" target="_blank">github.com/stereowipe</a>
+        </div>
+        <div class="contact-card">
+            <div class="contact-card-icon">🐦</div>
+            <h3>Twitter</h3>
+            <p>Follow us for updates and announcements</p>
+            <a href="https://twitter.com/stereowipe" target="_blank">@stereowipe</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

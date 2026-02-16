@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StereoWipe Leaderboard - Benchmarking AI Models on Stereotyping</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a24;
+            --bg-hover: #22222e;
+            --text-primary: #f4f4f8;
+            --text-secondary: #a8a8b8;
+            --text-muted: #7a7a8c;
+            --border-color: #2a2a3a;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --gold: #fbbf24;
+            --silver: #94a3b8;
+            --bronze: #d97706;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-2: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 20px;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-primary);
+        }
+        
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-1);
+            border-radius: 1px;
+        }
+        
+        .nav-links a {
+            position: relative;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 48px 40px 64px;
+        }
+
+        /* Header Section */
+        .page-header {
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .page-header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 17px;
+            max-width: 680px;
+            line-height: 1.7;
+        }
+
+        /* Controls Bar */
+        .controls-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding: 16px 24px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .legend {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+        }
+
+        .legend-dot.first { background: var(--gold); box-shadow: 0 0 10px rgba(251, 191, 36, 0.35); }
+        .legend-dot.second { background: var(--silver); }
+        .legend-dot.third { background: var(--bronze); }
+
+        .view-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .control-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .control-btn.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        /* Leaderboard Table */
+        .leaderboard-wrapper {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .leaderboard-table th {
+            background: var(--bg-tertiary);
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 64px;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .leaderboard-table th:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .leaderboard-table th.sorted {
+            color: var(--accent-primary);
+        }
+
+        .leaderboard-table th .sort-icon {
+            margin-left: 4px;
+            opacity: 0.5;
+        }
+
+        .leaderboard-table th.sorted .sort-icon {
+            opacity: 1;
+        }
+
+        .leaderboard-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .leaderboard-table tbody tr {
+            transition: background 0.15s;
+        }
+
+        .leaderboard-table tbody tr:hover {
+            background: var(--bg-hover);
+        }
+
+        /* Rank Column */
+        .rank-cell {
+            width: 70px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            font-size: 18px;
+        }
+
+        .rank-badge.first {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(251, 191, 36, 0.1));
+            color: var(--gold);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .rank-badge.second {
+            background: linear-gradient(135deg, rgba(148, 163, 184, 0.2), rgba(148, 163, 184, 0.08));
+            color: var(--silver);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+        }
+
+        .rank-badge.third {
+            background: linear-gradient(135deg, rgba(217, 119, 6, 0.2), rgba(217, 119, 6, 0.08));
+            color: var(--bronze);
+            border: 1px solid rgba(217, 119, 6, 0.25);
+        }
+
+        /* Model Column */
+        .model-cell {
+            min-width: 220px;
+        }
+
+        .model-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .model-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            letter-spacing: -0.5px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .model-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-primary);
+            letter-spacing: -0.2px;
+        }
+
+        .model-provider {
+            font-size: 13px;
+            color: rgba(148, 163, 184, 0.85);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        /* Score Cells */
+        .score-cell {
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+            min-width: 80px;
+        }
+
+        .score-value {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .score-value.excellent {
+            background: rgba(34, 197, 94, 0.12);
+            color: var(--success);
+        }
+
+        .score-value.good {
+            background: rgba(99, 102, 241, 0.12);
+            color: var(--accent-primary);
+        }
+
+        .score-value.warning {
+            background: rgba(245, 158, 11, 0.12);
+            color: var(--warning);
+        }
+
+        .score-value.danger {
+            background: rgba(239, 68, 68, 0.12);
+            color: var(--danger);
+        }
+
+        /* Category Rank */
+        .category-rank {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .category-rank.top-3 {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* Overall Score Column */
+        .overall-cell {
+            min-width: 100px;
+        }
+
+        .overall-score {
+            font-size: 18px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-top: 48px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .stat-card .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Last Updated */
+        .last-updated {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 24px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .leaderboard-wrapper {
+                overflow-x: auto;
+            }
+            
+            .leaderboard-table {
+                min-width: 1200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .controls-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .legend {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Compact View */
+        .leaderboard-table.compact th,
+        .leaderboard-table.compact td {
+            padding: 8px 12px;
+        }
+
+        .leaderboard-table.compact .model-icon {
+            display: none;
+        }
+
+        .leaderboard-table.compact .score-value {
+            padding: 2px 8px;
+        }
+
+        /* Provider badge colors */
+        .provider-google { background: linear-gradient(135deg, #4285f4, #34a853); }
+        .provider-openai { background: linear-gradient(135deg, #10a37f, #1a7f64); }
+        .provider-anthropic { background: linear-gradient(135deg, #d4a27f, #c4916f); }
+        .provider-meta { background: linear-gradient(135deg, #0866ff, #0654cc); }
+        .provider-mistral { background: linear-gradient(135deg, #ff7000, #ff5500); }
+        .provider-xai { background: linear-gradient(135deg, #1d9bf0, #1a8cd8); }
+        .provider-alibaba { background: linear-gradient(135deg, #ff6a00, #ee5a00); }
+        .provider-deepseek { background: linear-gradient(135deg, #0066ff, #0055dd); }
+        .provider-default { background: var(--gradient-1); }
+
+        /* Highlight rows */
+        tr.highlight-first td { 
+            background: rgba(251, 191, 36, 0.08); 
+            border-top: 1px solid rgba(251, 191, 36, 0.2);
+            border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+        }
+        tr.highlight-first td:first-child {
+            border-left: 3px solid var(--gold);
+        }
+        tr.highlight-second td { 
+            background: rgba(148, 163, 184, 0.05); 
+        }
+        tr.highlight-second td:first-child {
+            border-left: 3px solid var(--silver);
+        }
+        tr.highlight-third td { 
+            background: rgba(217, 119, 6, 0.05); 
+        }
+        tr.highlight-third td:first-child {
+            border-left: 3px solid var(--bronze);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 48px 40px;
+            margin-top: 64px;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .footer p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: var(--accent-secondary);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="logo">StereoWipe</div>
+            <ul class="nav-links">
+                <li><a href="/" {% if active_page == 'home' %}class="active"{% endif %}>Home</a></li>
+                <li><a href="/leaderboard" {% if active_page == 'leaderboard' %}class="active"{% endif %}>Leaderboard</a></li>
+                <li><a href="/arena" {% if active_page == 'arena' %}class="active"{% endif %}>Arena</a></li>
+                <li><a href="/documentation" {% if active_page == 'documentation' %}class="active"{% endif %}>Documentation</a></li>
+                <li><a href="/about" {% if active_page == 'about' %}class="active"{% endif %}>About</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        <header class="page-header">
+            <h1>Stereotyping Leaderboard</h1>
+            <p>Benchmarking leading AI models on stereotyping and cultural norms. Higher scores indicate less biased responses. Updated weekly.</p>
+        </header>
+
+        <div class="controls-bar">
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-dot first"></span>
+                    First Place
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot second"></span>
+                    Second Place
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot third"></span>
+                    Third Place
+                </div>
+            </div>
+            <div class="view-controls">
+                <button class="control-btn" id="viewToggle" onclick="toggleCompactView()">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M2 3h12v2H2zM2 7h12v2H2zM2 11h12v2H2z"/>
+                    </svg>
+                    Compact View
+                </button>
+                <button class="control-btn" onclick="exportData()">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 12l-4-4h2.5V3h3v5H12L8 12zM3 14h10v-1H3v1z"/>
+                    </svg>
+                    Export
+                </button>
+            </div>
+        </div>
+
+        <div class="leaderboard-wrapper">
+            <table class="leaderboard-table" id="leaderboardTable">
+                <thead>
+                    <tr>
+                        <th class="rank-col" data-sort="rank">
+                            # <span class="sort-icon">↕</span>
+                        </th>
+                        <th class="model-col" data-sort="model">
+                            Model <span class="sort-icon">↕</span>
+                        </th>
+                        <th class="score-col sorted" data-sort="overall">
+                            Overall <span class="sort-icon">↓</span>
+                        </th>
+                        <th class="score-col" data-sort="gender">
+                            Gender <span class="sort-icon">↕</span>
+                        </th>
+                        <th class="score-col" data-sort="race">
+                            Race <span class="sort-icon">↕</span>
+                        </th>
+                        <th class="score-col" data-sort="religion">
+                            Religion <span class="sort-icon">↕</span>
+                        </th>
+                        <th class="score-col" data-sort="nationality">
+                            Nation <span class="sort-icon">↕</span>
+                        </th>
+                        <th class="score-col" data-sort="profession">
+                            Prof. <span class="sort-icon">↕</span>
+                        </th>
+                        <th class="score-col" data-sort="cultural">
+                            Cultural <span class="sort-icon">↕</span>
+                        </th>
+                        <th class="score-col" data-sort="implicit">
+                            Implicit <span class="sort-icon">↕</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if leaderboard_data %}
+                        {% for model in leaderboard_data %}
+                        <tr class="{% if loop.index == 1 %}highlight-first{% elif loop.index == 2 %}highlight-second{% elif loop.index == 3 %}highlight-third{% endif %}">
+                            <td class="rank-cell">
+                                {% if loop.index == 1 %}
+                                    <span class="rank-badge first">🥇</span>
+                                {% elif loop.index == 2 %}
+                                    <span class="rank-badge second">🥈</span>
+                                {% elif loop.index == 3 %}
+                                    <span class="rank-badge third">🥉</span>
+                                {% else %}
+                                    <span class="rank-badge">{{ loop.index }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="model-cell">
+                                <div class="model-info">
+                                    <div class="model-icon">{{ model.model_name[:2]|upper }}</div>
+                                    <div>
+                                        <div class="model-name">{{ model.model_name }}</div>
+                                        <div class="model-provider">{{ model.provider or 'Unknown' }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="score-cell overall-cell">
+                                <span class="overall-score {% if model.overall_score >= 85 %}excellent{% elif model.overall_score >= 70 %}good{% elif model.overall_score >= 50 %}warning{% else %}danger{% endif %}" style="color: {% if model.overall_score >= 85 %}var(--success){% elif model.overall_score >= 70 %}var(--accent-primary){% elif model.overall_score >= 50 %}var(--warning){% else %}var(--danger){% endif %}">
+                                    {{ "%.1f"|format(model.overall_score) }}
+                                </span>
+                            </td>
+                            <td class="score-cell">
+                                <span class="score-value {% if model.gender_score and model.gender_score >= 85 %}excellent{% elif model.gender_score and model.gender_score >= 70 %}good{% elif model.gender_score and model.gender_score >= 50 %}warning{% else %}danger{% endif %}">
+                                    {{ "%.0f"|format(model.gender_score) if model.gender_score else '-' }}
+                                </span>
+                            </td>
+                            <td class="score-cell">
+                                <span class="score-value {% if model.race_score and model.race_score >= 85 %}excellent{% elif model.race_score and model.race_score >= 70 %}good{% elif model.race_score and model.race_score >= 50 %}warning{% else %}danger{% endif %}">
+                                    {{ "%.0f"|format(model.race_score) if model.race_score else '-' }}
+                                </span>
+                            </td>
+                            <td class="score-cell">
+                                <span class="score-value {% if model.religion_score and model.religion_score >= 85 %}excellent{% elif model.religion_score and model.religion_score >= 70 %}good{% elif model.religion_score and model.religion_score >= 50 %}warning{% else %}danger{% endif %}">
+                                    {{ "%.0f"|format(model.religion_score) if model.religion_score else '-' }}
+                                </span>
+                            </td>
+                            <td class="score-cell">
+                                <span class="score-value {% if model.nationality_score and model.nationality_score >= 85 %}excellent{% elif model.nationality_score and model.nationality_score >= 70 %}good{% elif model.nationality_score and model.nationality_score >= 50 %}warning{% else %}danger{% endif %}">
+                                    {{ "%.0f"|format(model.nationality_score) if model.nationality_score else '-' }}
+                                </span>
+                            </td>
+                            <td class="score-cell">
+                                <span class="score-value {% if model.profession_score and model.profession_score >= 85 %}excellent{% elif model.profession_score and model.profession_score >= 70 %}good{% elif model.profession_score and model.profession_score >= 50 %}warning{% else %}danger{% endif %}">
+                                    {{ "%.0f"|format(model.profession_score) if model.profession_score else '-' }}
+                                </span>
+                            </td>
+                            <td class="score-cell">
+                                <span class="score-value {% if model.cultural_sensitivity_score and model.cultural_sensitivity_score >= 85 %}excellent{% elif model.cultural_sensitivity_score and model.cultural_sensitivity_score >= 70 %}good{% elif model.cultural_sensitivity_score and model.cultural_sensitivity_score >= 50 %}warning{% else %}danger{% endif %}">
+                                    {{ "%.0f"|format(model.cultural_sensitivity_score) if model.cultural_sensitivity_score else '-' }}
+                                </span>
+                            </td>
+                            <td class="score-cell">
+                                <span class="score-value {% if model.implicit_stereotype_rate and model.implicit_stereotype_rate <= 15 %}excellent{% elif model.implicit_stereotype_rate and model.implicit_stereotype_rate <= 25 %}good{% elif model.implicit_stereotype_rate and model.implicit_stereotype_rate <= 40 %}warning{% else %}danger{% endif %}">
+                                    {{ "%.0f"|format(model.implicit_stereotype_rate) if model.implicit_stereotype_rate else '-' }}%
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="10" style="text-align: center; padding: 60px; color: var(--text-muted);">
+                                <div style="font-size: 48px; margin-bottom: 16px;">📊</div>
+                                <h3 style="margin-bottom: 8px; color: var(--text-secondary);">No Data Available</h3>
+                                <p>Run the evaluation pipeline to generate leaderboard data.</p>
+                                <p style="margin-top: 16px;">
+                                    <code style="background: var(--bg-tertiary); padding: 8px 16px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 13px;">
+                                        python scripts/seed_data.py --all
+                                    </code>
+                                </p>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if leaderboard_data %}
+        <div class="stats-section">
+            <div class="stat-card">
+                <h4>Models Evaluated</h4>
+                <div class="stat-value">{{ leaderboard_data|length }}</div>
+            </div>
+            <div class="stat-card">
+                <h4>Average Score</h4>
+                <div class="stat-value">{{ "%.1f"|format(leaderboard_data|sum(attribute='overall_score') / leaderboard_data|length) }}</div>
+            </div>
+            <div class="stat-card">
+                <h4>Highest Score</h4>
+                <div class="stat-value">{{ "%.1f"|format(leaderboard_data[0].overall_score) }}</div>
+            </div>
+            <div class="stat-card">
+                <h4>Prompts per Model</h4>
+                <div class="stat-value">{{ leaderboard_data[0].total_prompts_evaluated if leaderboard_data[0].total_prompts_evaluated else '—' }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="last-updated">
+            <p>Last updated: {{ snapshot_date or 'Never' }} • Methodology: <a href="/documentation" style="color: var(--accent-primary);">Learn more</a></p>
+        </div>
+    </main>
+
+    <script>
+        let isCompact = false;
+        let currentSort = 'overall';
+        let sortDirection = 'desc';
+
+        function toggleCompactView() {
+            const table = document.getElementById('leaderboardTable');
+            const btn = document.getElementById('viewToggle');
+            isCompact = !isCompact;
+            
+            if (isCompact) {
+                table.classList.add('compact');
+                btn.classList.add('active');
+            } else {
+                table.classList.remove('compact');
+                btn.classList.remove('active');
+            }
+        }
+
+        function exportData() {
+            // Export leaderboard as JSON
+            window.location.href = '/api/leaderboard.json';
+        }
+
+        // Column sorting
+        document.querySelectorAll('.leaderboard-table th[data-sort]').forEach(th => {
+            th.addEventListener('click', () => {
+                const sortKey = th.dataset.sort;
+                
+                // Toggle direction if same column
+                if (currentSort === sortKey) {
+                    sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    currentSort = sortKey;
+                    sortDirection = 'desc';
+                }
+                
+                // Update UI
+                document.querySelectorAll('.leaderboard-table th').forEach(header => {
+                    header.classList.remove('sorted');
+                    header.querySelector('.sort-icon').textContent = '↕';
+                });
+                
+                th.classList.add('sorted');
+                th.querySelector('.sort-icon').textContent = sortDirection === 'asc' ? '↑' : '↓';
+                
+                // Sort rows
+                const tbody = document.querySelector('.leaderboard-table tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                
+                rows.sort((a, b) => {
+                    let aVal, bVal;
+                    
+                    if (sortKey === 'rank') {
+                        aVal = parseInt(a.cells[0].textContent) || 999;
+                        bVal = parseInt(b.cells[0].textContent) || 999;
+                    } else if (sortKey === 'model') {
+                        aVal = a.cells[1].querySelector('.model-name').textContent;
+                        bVal = b.cells[1].querySelector('.model-name').textContent;
+                        return sortDirection === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                    } else {
+                        const colIndex = {
+                            'overall': 2, 'gender': 3, 'race': 4, 'religion': 5,
+                            'nationality': 6, 'profession': 7, 'cultural': 8, 'implicit': 9
+                        }[sortKey];
+                        
+                        aVal = parseFloat(a.cells[colIndex].textContent) || 0;
+                        bVal = parseFloat(b.cells[colIndex].textContent) || 0;
+                    }
+                    
+                    return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+                });
+                
+                rows.forEach(row => tbody.appendChild(row));
+            });
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 StereoWipe. A project by <a href="https://www.sociallabs.com" target="_blank">Social Protocol Labs</a>.</p>
+            <div class="footer-links">
+                <a href="/about">About</a>
+                <a href="/documentation">Documentation</a>
+                <a href="/faq">FAQ</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
+

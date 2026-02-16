@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+
+{% block title %}Arena - StereoWipe{% endblock %}
+
+{% block head %}
+<style>
+    .arena-hero {
+        background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+        padding: 60px 40px;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .arena-hero h1 {
+        font-size: 36px;
+        margin-bottom: 12px;
+        color: var(--text-primary);
+    }
+    
+    .arena-hero p {
+        font-size: 16px;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .arena-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 48px 40px;
+    }
+    
+    .battle-stats {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+    
+    .battle-count {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 12px 24px;
+        display: inline-block;
+        font-size: 15px;
+        color: var(--text-secondary);
+    }
+    
+    .battle-count strong {
+        color: var(--accent-primary);
+    }
+    
+    .battle-prompt {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 32px;
+    }
+    
+    .battle-prompt h3 {
+        color: var(--text-muted);
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+    }
+    
+    .battle-prompt p {
+        font-size: 16px;
+        line-height: 1.7;
+        color: var(--text-primary);
+        margin: 0;
+    }
+    
+    .models-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 32px;
+    }
+    
+    .model-response {
+        background: var(--bg-secondary);
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        padding: 24px;
+        min-height: 280px;
+        transition: border-color 0.2s;
+    }
+    
+    .model-response:hover {
+        border-color: var(--accent-primary);
+    }
+    
+    .model-response h4 {
+        color: var(--text-primary);
+        margin-bottom: 16px;
+        font-size: 16px;
+        text-align: center;
+        background: var(--bg-tertiary);
+        padding: 12px;
+        border-radius: 8px;
+    }
+    
+    .model-response .response-text {
+        font-size: 14px;
+        line-height: 1.7;
+        color: var(--text-secondary);
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+    
+    .voting-section {
+        text-align: center;
+    }
+    
+    .voting-section h3 {
+        color: var(--text-primary);
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+    
+    .voting-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .vote-btn {
+        padding: 14px 28px;
+        font-size: 15px;
+        font-weight: 600;
+        border: 2px solid var(--accent-primary);
+        border-radius: 8px;
+        background: transparent;
+        color: var(--accent-primary);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: inherit;
+    }
+    
+    .vote-btn:hover {
+        background: var(--accent-primary);
+        color: white;
+    }
+    
+    .vote-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .vote-btn.tie {
+        border-color: var(--text-muted);
+        color: var(--text-muted);
+    }
+    
+    .vote-btn.tie:hover {
+        background: var(--text-muted);
+        color: var(--bg-primary);
+    }
+    
+    .voting-result {
+        background: rgba(34, 197, 94, 0.1);
+        border: 1px solid var(--success);
+        border-radius: 12px;
+        padding: 24px;
+        margin-top: 24px;
+        display: none;
+    }
+    
+    .voting-result h4 {
+        color: var(--success);
+        margin-bottom: 16px;
+    }
+    
+    .voting-result p {
+        margin: 8px 0;
+        color: var(--text-secondary);
+    }
+    
+    .voting-result strong {
+        color: var(--text-primary);
+    }
+    
+    .next-battle-btn {
+        padding: 12px 24px;
+        font-size: 14px;
+        background: var(--success);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 16px;
+        font-family: inherit;
+        font-weight: 600;
+        transition: opacity 0.2s;
+    }
+    
+    .next-battle-btn:hover {
+        opacity: 0.9;
+    }
+    
+    .error-message {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid var(--danger);
+        border-radius: 12px;
+        padding: 24px;
+        color: var(--danger);
+        text-align: center;
+        margin-bottom: 24px;
+    }
+    
+    .loading {
+        text-align: center;
+        padding: 16px;
+        color: var(--text-muted);
+    }
+    
+    @media (max-width: 768px) {
+        .arena-hero {
+            padding: 48px 20px;
+        }
+        .arena-hero h1 {
+            font-size: 28px;
+        }
+        .arena-container {
+            padding: 32px 20px;
+        }
+        .models-container {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        .voting-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        .vote-btn {
+            width: 200px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="arena-hero">
+    <h1>Model Arena</h1>
+    <p>Compare responses from different models and vote for the better one. Your votes help create a more accurate leaderboard.</p>
+</section>
+
+<div class="arena-container">
+    <div class="battle-stats">
+        <div class="battle-count">
+            Battles completed: <strong>{{ battle_count }}</strong>
+        </div>
+    </div>
+    
+    {% if error_message %}
+        <div class="error-message">
+            {{ error_message }}
+        </div>
+    {% else %}
+        <div class="battle-prompt">
+            <h3>Prompt</h3>
+            <p>{{ battle_data.prompt_text }}</p>
+        </div>
+        
+        <div class="models-container">
+            <div class="model-response">
+                <h4>Model A</h4>
+                <div class="response-text">{{ battle_data.response_a }}</div>
+            </div>
+            
+            <div class="model-response">
+                <h4>Model B</h4>
+                <div class="response-text">{{ battle_data.response_b }}</div>
+            </div>
+        </div>
+        
+        <div class="voting-section">
+            <h3>Which response shows less stereotyping?</h3>
+            <div class="voting-buttons">
+                <button class="vote-btn" onclick="vote('a')">A is better</button>
+                <button class="vote-btn tie" onclick="vote('tie')">Both equal</button>
+                <button class="vote-btn" onclick="vote('b')">B is better</button>
+            </div>
+            
+            <div class="voting-result" id="voting-result">
+                <h4>Vote recorded!</h4>
+                <p><strong>Model A:</strong> <span id="model-a-name"></span></p>
+                <p><strong>Model B:</strong> <span id="model-b-name"></span></p>
+                <p><strong>Your choice:</strong> <span id="winner-text"></span></p>
+                <button class="next-battle-btn" onclick="nextBattle()">Next Battle →</button>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let votingInProgress = false;
+    
+    function vote(winner) {
+        if (votingInProgress) return;
+        
+        votingInProgress = true;
+        
+        const buttons = document.querySelectorAll('.vote-btn');
+        buttons.forEach(btn => btn.disabled = true);
+        
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'loading';
+        loadingDiv.innerHTML = 'Recording vote...';
+        document.querySelector('.voting-buttons').appendChild(loadingDiv);
+        
+        fetch('/arena/vote', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ winner: winner })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('model-a-name').textContent = data.model_a;
+                document.getElementById('model-b-name').textContent = data.model_b;
+                
+                let winnerText = '';
+                if (data.winner === 'a') {
+                    winnerText = 'Model A is better';
+                } else if (data.winner === 'b') {
+                    winnerText = 'Model B is better';
+                } else {
+                    winnerText = 'Both models are equal';
+                }
+                document.getElementById('winner-text').textContent = winnerText;
+                
+                document.querySelector('.battle-count strong').textContent = data.battle_count;
+                
+                document.querySelector('.voting-buttons').style.display = 'none';
+                document.getElementById('voting-result').style.display = 'block';
+            } else {
+                alert('Error recording vote: ' + data.error);
+                buttons.forEach(btn => btn.disabled = false);
+            }
+            
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+            
+            votingInProgress = false;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error recording vote. Please try again.');
+            buttons.forEach(btn => btn.disabled = false);
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+            votingInProgress = false;
+        });
+    }
+    
+    function nextBattle() {
+        window.location.reload();
+    }
+</script>
+{% endblock %}

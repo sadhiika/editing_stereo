@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}StereoWipe{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="/" class="logo">StereoWipe</a>
+            <ul class="nav-links">
+                <li><a href="/" {% if active_page == 'home' %}class="active"{% endif %}>Home</a></li>
+                <li><a href="/leaderboard" {% if active_page == 'leaderboard' %}class="active"{% endif %}>Leaderboard</a></li>
+                <li><a href="/arena" {% if active_page == 'arena' %}class="active"{% endif %}>Arena</a></li>
+                <li><a href="/documentation" {% if active_page == 'documentation' %}class="active"{% endif %}>Documentation</a></li>
+                <li><a href="/about" {% if active_page == 'about' %}class="active"{% endif %}>About</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 StereoWipe. A project by <a href="https://www.sociallabs.com" target="_blank">Social Protocol Labs</a>.</p>
+            <div class="footer-links">
+                <a href="/about">About</a>
+                <a href="/documentation">Documentation</a>
+                <a href="/faq">FAQ</a>
+            </div>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+
+

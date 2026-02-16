@@ -1,0 +1,24 @@
+# Core dependencies (required for all scripts)
+pandas>=1.5.0
+numpy>=1.20.0
+click>=8.0.0
+tqdm>=4.60.0
+
+# Statistical analysis (required for calculate_agreement.py)
+scipy>=1.7.0
+scikit-learn>=1.0.0
+
+# Visualization (optional, for agreement analysis plots)
+matplotlib>=3.5.0
+seaborn>=0.11.0
+
+# HuggingFace datasets (optional, for dataset export)
+datasets>=2.0.0
+
+# Jupyter notebooks (optional, for analysis notebooks)
+jupyter>=1.0.0
+ipykernel>=6.0.0
+
+# Development and testing
+pytest>=7.0.0
+pytest-cov>=4.0.0

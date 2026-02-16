@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}About - StereoWipe{% endblock %}
+
+{% block head %}
+<style>
+    .about-hero {
+        background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+        padding: 80px 40px;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .about-hero h1 {
+        font-size: 42px;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+    }
+    
+    .about-hero p {
+        font-size: 18px;
+        color: var(--text-secondary);
+    }
+    
+    .about-content {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 64px 40px;
+    }
+    
+    .about-section {
+        margin-bottom: 64px;
+    }
+    
+    .about-section h2 {
+        font-size: 28px;
+        color: var(--text-primary);
+        margin-bottom: 24px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .about-section p {
+        font-size: 16px;
+        line-height: 1.8;
+        margin-bottom: 20px;
+        color: var(--text-secondary);
+    }
+    
+    .values-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-top: 32px;
+    }
+    
+    .value-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 24px;
+    }
+    
+    .value-card h4 {
+        color: var(--accent-primary);
+        margin-bottom: 12px;
+        font-size: 16px;
+    }
+    
+    .value-card p {
+        font-size: 14px;
+        margin: 0;
+    }
+    
+    @media (max-width: 768px) {
+        .about-hero {
+            padding: 60px 20px;
+        }
+        .about-hero h1 {
+            font-size: 32px;
+        }
+        .about-content {
+            padding: 40px 20px;
+        }
+        .values-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="about-hero">
+    <h1>About StereoWipe</h1>
+    <p>Building more equitable AI through comprehensive stereotyping evaluation</p>
+</section>
+
+<div class="about-content">
+    <div class="about-section">
+        <h2>Our Mission</h2>
+        <p>At StereoWipe, we're addressing a critical challenge in Generative AI: evaluating and mitigating stereotyping across languages and cultures. While significant progress has been made in English-based systems, there's a pressing need to extend these efforts globally.</p>
+        <p>Our research focuses on the challenges of evaluating bias in a global context, developing new methods for subjective cultural assessments. Our benchmark is designed to measure stereotyping in language models across multiple dimensions including gender, race, religion, nationality, profession, and more.</p>
+        <p>By creating tailored evaluation tools, we aim to provide accurate assessments of bias in AI systems, encourage development of fairer technologies, and promote cross-cultural understanding of stereotyping in language models.</p>
+    </div>
+
+    <div class="about-section">
+        <h2>Our Approach</h2>
+        <p>Our work is grounded in a commitment to open and collaborative research. We believe that the best way to address the complex challenge of stereotyping in AI is to work with a diverse community of researchers, developers, and domain experts.</p>
+        
+        <div class="values-grid">
+            <div class="value-card">
+                <h4>Transparent</h4>
+                <p>We provide detailed documentation for our benchmarks and tools, making our code and methodology available to the public.</p>
+            </div>
+            <div class="value-card">
+                <h4>Rigorous</h4>
+                <p>We use state-of-the-art methods including LLM-as-a-Judge and human annotation to ensure reliable and robust findings.</p>
+            </div>
+            <div class="value-card">
+                <h4>Inclusive</h4>
+                <p>We work with a global community to ensure our benchmarks are culturally sensitive and relevant across contexts.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="about-section">
+        <h2>The Leaderboard</h2>
+        <p>Our flagship product is the StereoWipe Leaderboard—a public-facing accountability tool that benchmarks leading AI models on stereotyping and cultural norms. Updated weekly, it evaluates 40+ models across 10 bias categories with region-specific assessments.</p>
+        <p>The leaderboard tracks both explicit stereotypes (direct statements) and implicit stereotypes (subtle assumptions), providing a comprehensive view of model behavior across diverse cultural contexts.</p>
+        <div style="margin-top: 24px;">
+            <a href="/leaderboard" class="btn btn-primary">View the Leaderboard</a>
+        </div>
+    </div>
+
+    <div class="about-section">
+        <h2>Get Involved</h2>
+        <p>StereoWipe is an open research initiative. We welcome contributions from researchers, developers, and community members interested in making AI more equitable.</p>
+        <div style="margin-top: 24px; display: flex; gap: 16px; flex-wrap: wrap;">
+            <a href="https://github.com/stereowipe" target="_blank" class="btn btn-secondary">GitHub Repository</a>
+            <a href="/arena" class="btn btn-secondary">Contribute via Arena</a>
+            <a href="/documentation" class="btn btn-secondary">Read Documentation</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

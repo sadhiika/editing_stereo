@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Resources - StereoWipe{% endblock %}
+
+{% block head %}
+<style>
+    .resources-hero {
+        background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+        padding: 80px 40px;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .resources-hero h1 {
+        font-size: 42px;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+    }
+    
+    .resources-hero p {
+        font-size: 18px;
+        color: var(--text-secondary);
+    }
+    
+    .resources-content {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 64px 40px;
+    }
+    
+    .intro-box {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-left: 3px solid var(--accent-primary);
+        border-radius: 8px;
+        padding: 32px;
+        margin-bottom: 48px;
+    }
+    
+    .intro-box p {
+        font-size: 16px;
+        line-height: 1.8;
+        margin-bottom: 16px;
+    }
+    
+    .intro-box p:last-child {
+        margin-bottom: 0;
+    }
+    
+    .intro-box strong {
+        color: var(--text-primary);
+    }
+    
+    .section-title {
+        font-size: 24px;
+        color: var(--text-primary);
+        margin-bottom: 32px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .resource-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 28px;
+        margin-bottom: 20px;
+        transition: all 0.2s;
+    }
+    
+    .resource-card:hover {
+        border-color: var(--accent-primary);
+    }
+    
+    .resource-title {
+        color: var(--text-primary);
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+    
+    .resource-description {
+        color: var(--text-secondary);
+        font-size: 14px;
+        line-height: 1.7;
+        margin-bottom: 16px;
+    }
+    
+    .resource-links {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+    
+    .resource-links a {
+        color: var(--accent-primary);
+        font-size: 14px;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+    
+    .resource-links a:hover {
+        color: var(--accent-secondary);
+    }
+    
+    .resources-section {
+        margin-bottom: 48px;
+    }
+    
+    @media (max-width: 768px) {
+        .resources-hero {
+            padding: 60px 20px;
+        }
+        .resources-hero h1 {
+            font-size: 32px;
+        }
+        .resources-content {
+            padding: 40px 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="resources-hero">
+    <h1>Resources</h1>
+    <p>Research papers and datasets in bias evaluation</p>
+</section>
+
+<div class="resources-content">
+    <div class="intro-box">
+        <p><strong>Bias in AI is a complex issue.</strong> It can manifest in many ways, from stereotypes to unfair performance across different demographic groups. Our work focuses on developing benchmarks and tools to measure and mitigate these biases.</p>
+        <p>For the StereoWipe project, our objective is to develop a dataset and an evaluation framework specifically targeted at stereotyping. We recognize that addressing the full scope of bias and fairness is an expansive subject; therefore, our focus is more narrowly tailored to understanding and tackling stereotyping issues.</p>
+    </div>
+
+    <div class="resources-section">
+        <h2 class="section-title">References and Existing Datasets</h2>
+
+        <div class="resource-card">
+            <h3 class="resource-title">Bias in Bios: A Large Professionally Curated Dataset</h3>
+            <p class="resource-description">
+                This paper presents an in-depth analysis of gender bias within a large dataset of professional biographies. The study includes methodologies for measuring gender bias, experiments, and discussions on implications in natural language processing.
+            </p>
+            <div class="resource-links">
+                <a href="https://arxiv.org/abs/1906.09208" target="_blank">Paper →</a>
+                <a href="https://github.com/microsoft/biosbias" target="_blank">GitHub →</a>
+            </div>
+        </div>
+
+        <div class="resource-card">
+            <h3 class="resource-title">StereoSet: Measuring Stereotypical Bias</h3>
+            <p class="resource-description">
+                StereoSet is a large-scale dataset in English designed to measure stereotypical biases in pretrained language models. It covers four main domains: gender, profession, race, and religion, with 17,000 sentences across 321 stereotypes.
+            </p>
+            <div class="resource-links">
+                <a href="https://arxiv.org/abs/2004.09456" target="_blank">Paper →</a>
+                <a href="https://stereoset.mit.edu/" target="_blank">Website →</a>
+            </div>
+        </div>
+
+        <div class="resource-card">
+            <h3 class="resource-title">WinoBias: Gender Bias in Coreference Resolution</h3>
+            <p class="resource-description">
+                The WinoBias dataset evaluates gender bias in coreference resolution systems using Winograd-schema style sentences where only the gender of the pronoun is altered.
+            </p>
+            <div class="resource-links">
+                <a href="https://arxiv.org/abs/1804.06876" target="_blank">Paper →</a>
+                <a href="https://github.com/uclanlp/corefBias" target="_blank">GitHub →</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="resources-section">
+        <h2 class="section-title">Additional Relevant Research</h2>
+
+        <div class="resource-card">
+            <h3 class="resource-title">CrowS-Pairs: Social Biases in Masked Language Models</h3>
+            <p class="resource-description">
+                CrowS-Pairs is a challenge dataset for measuring the degree to which U.S. stereotypes are present in masked language models. It covers nine types of biases: race, gender, sexual orientation, religion, age, nationality, disability, physical appearance, and socioeconomic status.
+            </p>
+            <div class="resource-links">
+                <a href="https://arxiv.org/abs/2010.00133" target="_blank">Paper →</a>
+            </div>
+        </div>
+
+        <div class="resource-card">
+            <h3 class="resource-title">BOLD: Biases in Open-Ended Language Generation</h3>
+            <p class="resource-description">
+                The BOLD dataset measures biases in open-ended language generation across five domains: profession, gender, race, religion, and political ideology. It includes prompts and human-written continuations for evaluating biases in generated text.
+            </p>
+            <div class="resource-links">
+                <a href="https://arxiv.org/abs/2101.11718" target="_blank">Paper →</a>
+            </div>
+        </div>
+
+        <div class="resource-card">
+            <h3 class="resource-title">BiaSwap: Removing Dataset Bias</h3>
+            <p class="resource-description">
+                This paper introduces a novel method called BiaSwap for mitigating dataset bias by swapping instances between different demographic groups to balance representation in biased datasets.
+            </p>
+            <div class="resource-links">
+                <a href="https://arxiv.org/abs/2010.06721" target="_blank">Paper →</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

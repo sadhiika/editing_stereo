@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - StereoWipe</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/research.css') }}">
+    <style>
+        .leaderboard-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .leaderboard-intro {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .leaderboard-intro h3 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+        
+        .leaderboard-intro p {
+            margin: 5px 0;
+            color: #6c757d;
+        }
+        
+        .leaderboard-table {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .leaderboard-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .leaderboard-table th {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .leaderboard-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .leaderboard-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .rank-number {
+            font-weight: bold;
+            color: #495057;
+            text-align: center;
+            width: 60px;
+        }
+        
+        .rank-1 {
+            color: #ffd700;
+            font-size: 1.2em;
+        }
+        
+        .rank-2 {
+            color: #c0c0c0;
+            font-size: 1.1em;
+        }
+        
+        .rank-3 {
+            color: #cd7f32;
+            font-size: 1.1em;
+        }
+        
+        .model-name {
+            font-weight: 600;
+            color: #343a40;
+        }
+        
+        .elo-rating {
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .high-elo {
+            color: #28a745;
+        }
+        
+        .medium-elo {
+            color: #ffc107;
+        }
+        
+        .low-elo {
+            color: #dc3545;
+        }
+        
+        .win-rate {
+            font-weight: 500;
+        }
+        
+        .win-rate.high {
+            color: #28a745;
+        }
+        
+        .win-rate.medium {
+            color: #ffc107;
+        }
+        
+        .win-rate.low {
+            color: #dc3545;
+        }
+        
+        .battles-count {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        
+        .no-data h3 {
+            margin-bottom: 15px;
+        }
+        
+        .no-data p {
+            margin-bottom: 10px;
+        }
+        
+        .statistics-section {
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .statistics-section h3 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-card h4 {
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .leaderboard-table {
+                overflow-x: auto;
+            }
+            
+            .leaderboard-table table {
+                min-width: 600px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><strong>StereoWipe</strong></li>
+            <li><a href="/">Home</a></li>
+            <li><a href="/documentation">Documentation</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/resources">Resources</a></li>
+            <li><a href="/faq">FAQ</a></li>
+            <li><a href="/arena">Arena</a></li>
+            <li><a href="/leaderboard">Leaderboard</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <div class="leaderboard-container">
+            <h1>Model Leaderboard</h1>
+            
+            <div class="leaderboard-intro">
+                <h3>How It Works</h3>
+                <p>Models are ranked using the Elo rating system based on head-to-head comparisons in the <a href="/arena">Arena</a>.</p>
+                <p>Higher Elo ratings indicate better performance according to human preferences.</p>
+                <p>Starting Elo rating: 1500 • Ratings are updated daily based on arena battles.</p>
+            </div>
+            
+            {% if leaderboard_data %}
+                <div class="leaderboard-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Model</th>
+                                <th>Elo Rating</th>
+                                <th>Win Rate</th>
+                                <th>Battles</th>
+                                <th>W/L/T</th>
+                                <th>Last Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for model in leaderboard_data %}
+                                <tr>
+                                    <td class="rank-number {% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% endif %}">
+                                        {% if loop.index == 1 %}🥇
+                                        {% elif loop.index == 2 %}🥈
+                                        {% elif loop.index == 3 %}🥉
+                                        {% else %}{{ loop.index }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="model-name">{{ model.model_name }}</td>
+                                    <td class="elo-rating {% if model.elo_rating >= 1600 %}high-elo{% elif model.elo_rating >= 1400 %}medium-elo{% else %}low-elo{% endif %}">
+                                        {{ "%.0f"|format(model.elo_rating) }}
+                                    </td>
+                                    <td class="win-rate {% if (model.wins + model.losses + model.ties) > 0 %}{% set win_rate = (model.wins / (model.wins + model.losses + model.ties)) * 100 %}{% if win_rate >= 60 %}high{% elif win_rate >= 40 %}medium{% else %}low{% endif %}{% endif %}">
+                                        {% if (model.wins + model.losses + model.ties) > 0 %}
+                                            {{ "%.1f"|format((model.wins / (model.wins + model.losses + model.ties)) * 100) }}%
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                    <td class="battles-count">{{ model.battles_count }}</td>
+                                    <td>{{ model.wins }}/{{ model.losses }}/{{ model.ties }}</td>
+                                    <td>{{ model.last_updated[:10] if model.last_updated else 'N/A' }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="statistics-section">
+                    <h3>Arena Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4>Total Models</h4>
+                            <div class="stat-value">{{ leaderboard_data|length }}</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Total Battles</h4>
+                            <div class="stat-value">{{ leaderboard_data|sum(attribute='battles_count') }}</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Highest Elo</h4>
+                            <div class="stat-value">{{ "%.0f"|format(leaderboard_data|max(attribute='elo_rating')|attr('elo_rating')) if leaderboard_data else 0 }}</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Average Elo</h4>
+                            <div class="stat-value">{{ "%.0f"|format(leaderboard_data|sum(attribute='elo_rating') / leaderboard_data|length) if leaderboard_data else 0 }}</div>
+                        </div>
+                    </div>
+                </div>
+                
+            {% else %}
+                <div class="no-data">
+                    <h3>No Data Available</h3>
+                    <p>The leaderboard is empty. Models will appear here after arena battles are fought.</p>
+                    <p>Visit the <a href="/arena">Arena</a> to start comparing models!</p>
+                </div>
+            {% endif %}
+            
+            <div class="last-updated">
+                <p>Leaderboard updated daily at midnight UTC</p>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; 2024 StereoWipe Research Team. For inquiries, contact our team or visit our <a href="/volunteer">Volunteer Researchers</a> page.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,45 @@
+{
+  "study_name": "StereoWipe Validation Study",
+  "description": "Validation study comparing human annotations with LLM judge evaluations",
+  "prompts_path": "sample_data/prompts.json",
+  "models": [
+    "gpt-4",
+    "claude-3-opus",
+    "claude-3-sonnet",
+    "gemini-pro",
+    "llama-2-70b"
+  ],
+  "judges": [
+    "openai",
+    "anthropic"
+  ],
+  "sample_size": 100,
+  "annotations_per_response": 3,
+  "output_format": "json",
+  "export_formats": [
+    "csv",
+    "json",
+    "huggingface"
+  ],
+  "study_parameters": {
+    "randomize_order": true,
+    "blind_annotation": true,
+    "include_mock_responses": false,
+    "severity_scale": {
+      "min": 1,
+      "max": 5,
+      "description": "1=Mild, 2=Moderate, 3=Strong, 4=Very Strong, 5=Extreme"
+    }
+  },
+  "quality_control": {
+    "min_agreement_threshold": 0.7,
+    "max_annotation_time_minutes": 30,
+    "require_reasoning": true
+  },
+  "export_options": {
+    "include_raw_responses": true,
+    "include_judge_reasoning": true,
+    "anonymize_annotators": true,
+    "create_research_tables": true
+  }
+}

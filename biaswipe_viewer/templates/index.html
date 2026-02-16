@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}StereoWipe: Stereotyping Evaluation Benchmark for LLMs{% endblock %}
+
+{% block head %}
+<style>
+    /* Hero enhancements for home page */
+    .home-hero {
+        background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+        padding: 100px 40px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .home-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 30% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 70% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+    }
+    
+    .home-hero .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .home-hero h1 {
+        font-size: 52px;
+        margin-bottom: 24px;
+        background: linear-gradient(135deg, #fff 0%, #a8a8b8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1.2;
+    }
+    
+    .home-hero p {
+        font-size: 19px;
+        color: var(--text-secondary);
+        max-width: 650px;
+        margin: 0 auto 40px;
+        line-height: 1.7;
+    }
+    
+    /* Feature grid */
+    .features-section {
+        padding: 80px 40px;
+        background: var(--bg-primary);
+    }
+    
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 32px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    /* Methodology section */
+    .methodology-section {
+        padding: 80px 40px;
+        background: var(--bg-secondary);
+    }
+    
+    .methodology-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 32px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    /* About section */
+    .about-section {
+        padding: 80px 40px;
+        background: var(--bg-primary);
+    }
+    
+    .about-content {
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+    }
+    
+    .about-content p {
+        font-size: 17px;
+        line-height: 1.8;
+        margin-bottom: 24px;
+    }
+    
+    @media (max-width: 1024px) {
+        .features-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .methodology-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .home-hero {
+            padding: 60px 20px;
+        }
+        .home-hero h1 {
+            font-size: 32px;
+        }
+        .features-grid,
+        .methodology-grid {
+            grid-template-columns: 1fr;
+        }
+        .features-section,
+        .methodology-section,
+        .about-section {
+            padding: 60px 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="home-hero">
+    <div class="hero-content">
+        <h1>Benchmarking AI Models on Stereotyping & Cultural Norms</h1>
+        <p>StereoWipe is a research initiative creating comprehensive benchmarks for evaluating bias in Large Language Models, with a focus on subjective cultural assessments across global contexts.</p>
+        <div class="hero-buttons">
+            <a href="/leaderboard" class="btn btn-primary">View Leaderboard</a>
+            <a href="/arena" class="btn btn-secondary">Try the Arena</a>
+            <a href="https://github.com/stereowipe" target="_blank" class="btn btn-secondary">GitHub</a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="section-title">Our Research</div>
+    <p class="section-subtitle">Developing benchmarks to measure stereotyping in Large Language Models with cultural awareness</p>
+    
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Benchmark Development</h3>
+            <p>Large-scale datasets of prompts and responses to evaluate bias across cultural contexts. Our first benchmark evaluates 40+ leading AI models.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">🤖</div>
+            <h3>LLM-as-a-Judge</h3>
+            <p>State-of-the-art language models assess bias with nuanced understanding, tracking both explicit and implicit stereotyping.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">🌍</div>
+            <h3>Cultural Sensitivity</h3>
+            <p>Evaluating bias across Global South and Western contexts with region-specific assessments and cultural norm tracking.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Methodology Section -->
+<section class="methodology-section">
+    <div class="section-title">Our Methodology</div>
+    <p class="section-subtitle">A rigorous approach to stereotyping evaluation</p>
+    
+    <div class="methodology-grid">
+        <div class="step">
+            <div class="step-number">1</div>
+            <h4>Data Collection</h4>
+            <p>Diverse prompts across 10 bias categories including gender, race, religion, nationality, and profession.</p>
+        </div>
+        
+        <div class="step">
+            <div class="step-number">2</div>
+            <h4>Model Evaluation</h4>
+            <p>Automated evaluation using Gemini Flash as the primary judge, with human annotation validation.</p>
+        </div>
+        
+        <div class="step">
+            <div class="step-number">3</div>
+            <h4>Arena Battles</h4>
+            <p>Human preference voting through side-by-side model comparisons with Elo-based ranking.</p>
+        </div>
+        
+        <div class="step">
+            <div class="step-number">4</div>
+            <h4>Weekly Updates</h4>
+            <p>Leaderboard refreshed weekly with new evaluations, tracking model improvements over time.</p>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="about-section">
+    <div class="section-title">About StereoWipe</div>
+    <div class="about-content">
+        <p>StereoWipe addresses a critical gap in AI evaluation. While current benchmarks often rely on abstract definitions and Western-centric assumptions, we provide a nuanced, globally-aware approach to measuring stereotyping in language models.</p>
+        <p>Our benchmark empowers developers, researchers, and policymakers to build AI systems that serve all communities equitably, promoting social understanding rather than reinforcing harmful biases.</p>
+        <div style="margin-top: 32px;">
+            <a href="/about" class="btn btn-secondary">Learn More About Us</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

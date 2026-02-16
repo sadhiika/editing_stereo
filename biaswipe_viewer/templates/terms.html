@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Terms of Service - StereoWipe{% endblock %}
+
+{% block head %}
+<style>
+    .terms-hero {
+        background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+        padding: 80px 40px;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .terms-hero h1 {
+        font-size: 42px;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+    }
+    
+    .terms-hero p {
+        font-size: 18px;
+        color: var(--text-secondary);
+    }
+    
+    .terms-content {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 64px 40px;
+    }
+    
+    .terms-section {
+        margin-bottom: 48px;
+    }
+    
+    .terms-section h2 {
+        font-size: 22px;
+        color: var(--text-primary);
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .terms-section p {
+        font-size: 15px;
+        color: var(--text-secondary);
+        line-height: 1.8;
+        margin-bottom: 16px;
+    }
+    
+    .terms-section ul {
+        margin: 16px 0;
+        padding-left: 24px;
+    }
+    
+    .terms-section li {
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        line-height: 1.7;
+    }
+    
+    .last-updated {
+        color: var(--text-muted);
+        font-size: 14px;
+        margin-bottom: 32px;
+    }
+    
+    @media (max-width: 768px) {
+        .terms-hero {
+            padding: 60px 20px;
+        }
+        .terms-hero h1 {
+            font-size: 32px;
+        }
+        .terms-content {
+            padding: 40px 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="terms-hero">
+    <h1>Terms of Service</h1>
+    <p>Please read these terms carefully</p>
+</section>
+
+<div class="terms-content">
+    <p class="last-updated">Last updated: December 2024</p>
+    
+    <div class="terms-section">
+        <h2>1. Acceptance of Terms</h2>
+        <p>By accessing or using the StereoWipe website and services, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.</p>
+    </div>
+    
+    <div class="terms-section">
+        <h2>2. Description of Service</h2>
+        <p>StereoWipe provides a benchmark platform for evaluating stereotyping in Large Language Models. Our services include:</p>
+        <ul>
+            <li>A public leaderboard ranking AI models on stereotyping metrics</li>
+            <li>An arena for human preference voting on model responses</li>
+            <li>API access to leaderboard data</li>
+            <li>Documentation and research resources</li>
+        </ul>
+    </div>
+    
+    <div class="terms-section">
+        <h2>3. Use of Service</h2>
+        <p>You agree to use our services only for lawful purposes and in accordance with these terms. You agree not to:</p>
+        <ul>
+            <li>Attempt to interfere with or disrupt the service</li>
+            <li>Access the service through automated means except through our API</li>
+            <li>Use the service to violate any applicable laws or regulations</li>
+            <li>Misrepresent your affiliation or the source of any content you submit</li>
+        </ul>
+    </div>
+    
+    <div class="terms-section">
+        <h2>4. Intellectual Property</h2>
+        <p>The StereoWipe benchmark, methodology, and website content are the property of Social Protocol Labs. Our evaluation data and leaderboard results are made available under open research licenses for academic and research purposes.</p>
+    </div>
+    
+    <div class="terms-section">
+        <h2>5. Data and Privacy</h2>
+        <p>When you participate in the arena or use our services, we may collect anonymized voting data to improve our rankings. We do not collect personal information without your consent. See our Privacy Policy for details.</p>
+    </div>
+    
+    <div class="terms-section">
+        <h2>6. Disclaimer</h2>
+        <p>Our benchmark results are provided for research and informational purposes only. We make no guarantees about the accuracy or completeness of our evaluations. AI model behavior may change over time.</p>
+    </div>
+    
+    <div class="terms-section">
+        <h2>7. Contact</h2>
+        <p>For questions about these terms, please contact us at <a href="mailto:research@socialprotocol.com">research@socialprotocol.com</a>.</p>
+    </div>
+</div>
+{% endblock %}

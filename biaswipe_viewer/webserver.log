@@ -1,0 +1,76 @@
+ * Serving Flask app 'webserver'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://192.168.1.150:8080
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 101-359-793
+127.0.0.1 - - [16/Jul/2025 09:50:13] "HEAD / HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:50:14] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:50:14] "GET /static/css/research.css HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:50:14] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+127.0.0.1 - - [16/Jul/2025 09:50:36] "GET /documentation HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:50:36] "[36mGET /static/css/research.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [16/Jul/2025 09:50:50] "GET /about HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:50:50] "[36mGET /static/css/research.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [16/Jul/2025 09:50:51] "GET /resources HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:50:51] "[36mGET /static/css/research.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [16/Jul/2025 09:51:27] "GET /faq HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:51:27] "[36mGET /static/css/research.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [16/Jul/2025 09:51:37] "GET /arena HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:51:37] "[36mGET /static/css/research.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [16/Jul/2025 09:51:54] "GET /arena HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:51:54] "[36mGET /static/css/research.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [16/Jul/2025 09:51:55] "[35m[1mGET /leaderboard HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/Users/brijsingh/Documents/codeplay/stereowipe/venv/lib/python3.13/site-packages/flask/app.py", line 2213, in __call__
+    return self.wsgi_app(environ, start_response)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/brijsingh/Documents/codeplay/stereowipe/venv/lib/python3.13/site-packages/flask/app.py", line 2193, in wsgi_app
+    response = self.handle_exception(e)
+  File "/Users/brijsingh/Documents/codeplay/stereowipe/venv/lib/python3.13/site-packages/flask/app.py", line 2190, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/brijsingh/Documents/codeplay/stereowipe/venv/lib/python3.13/site-packages/flask/app.py", line 1486, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/brijsingh/Documents/codeplay/stereowipe/venv/lib/python3.13/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/brijsingh/Documents/codeplay/stereowipe/venv/lib/python3.13/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/brijsingh/Documents/codeplay/stereowipe/biaswipe_viewer/webserver.py", line 422, in leaderboard
+    return render_template('leaderboard.html',
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/brijsingh/Documents/codeplay/stereowipe/venv/lib/python3.13/site-packages/flask/templating.py", line 151, in render_template
+    return _render(app, template, context)
+  File "/Users/brijsingh/Documents/codeplay/stereowipe/venv/lib/python3.13/site-packages/flask/templating.py", line 132, in _render
+    rv = template.render(context)
+  File "/Users/brijsingh/Documents/codeplay/stereowipe/venv/lib/python3.13/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/brijsingh/Documents/codeplay/stereowipe/venv/lib/python3.13/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/brijsingh/Documents/codeplay/stereowipe/biaswipe_viewer/templates/leaderboard.html", line 284, in top-level template code
+    <div class="stat-value">{{ "%.0f"|format(leaderboard_data|max(attribute='elo_rating')|attr('elo_rating')) if leaderboard_data else 0 }}</div>
+    
+  File "/Users/brijsingh/Documents/codeplay/stereowipe/venv/lib/python3.13/site-packages/jinja2/filters.py", line 1043, in do_format
+    return soft_str(value) % (kwargs or args)
+           ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+jinja2.exceptions.UndefinedError: 'dict object' has no attribute 'elo_rating'
+127.0.0.1 - - [16/Jul/2025 09:51:55] "GET /leaderboard?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:51:55] "GET /leaderboard?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:51:55] "GET /leaderboard?__debugger__=yes&cmd=resource&f=console.png&s=hmplLU90qWKIGuvfsdtI HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:51:55] "GET /leaderboard?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:52:25] "GET /about HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:52:25] "[36mGET /static/css/research.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [16/Jul/2025 09:53:09] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:53:09] "[36mGET /static/css/research.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [16/Jul/2025 09:54:02] "GET /documentation HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:54:02] "[36mGET /static/css/research.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [16/Jul/2025 09:54:13] "GET /annotate HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:54:13] "[36mGET /static/css/research.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [16/Jul/2025 09:54:44] "POST /annotate/submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:54:44] "GET /annotate HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jul/2025 09:54:44] "[36mGET /static/css/research.css HTTP/1.1[0m" 304 -

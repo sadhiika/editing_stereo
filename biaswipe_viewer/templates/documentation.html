@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}Documentation - StereoWipe{% endblock %}
+
+{% block head %}
+<style>
+    .docs-hero {
+        background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+        padding: 80px 40px;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .docs-hero h1 {
+        font-size: 42px;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+    }
+    
+    .docs-hero p {
+        font-size: 18px;
+        color: var(--text-secondary);
+    }
+    
+    .docs-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 64px 40px;
+    }
+    
+    .docs-section {
+        margin-bottom: 64px;
+    }
+    
+    .docs-section h2 {
+        font-size: 24px;
+        color: var(--text-primary);
+        margin-bottom: 24px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .docs-section h3 {
+        font-size: 18px;
+        color: var(--text-primary);
+        margin: 24px 0 12px;
+    }
+    
+    .docs-section p {
+        font-size: 15px;
+        line-height: 1.8;
+        margin-bottom: 16px;
+        color: var(--text-secondary);
+    }
+    
+    .docs-section ul, .docs-section ol {
+        margin: 16px 0;
+        padding-left: 24px;
+    }
+    
+    .docs-section li {
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        line-height: 1.7;
+    }
+    
+    .metric-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+    }
+    
+    .metric-card h4 {
+        color: var(--accent-primary);
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+    
+    .metric-card p {
+        margin: 0;
+        font-size: 14px;
+    }
+    
+    .code-block {
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 16px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        color: var(--text-secondary);
+        overflow-x: auto;
+        margin: 16px 0;
+    }
+    
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin: 24px 0;
+    }
+    
+    .category-tag {
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 12px 16px;
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+    
+    @media (max-width: 768px) {
+        .docs-hero {
+            padding: 60px 20px;
+        }
+        .docs-hero h1 {
+            font-size: 32px;
+        }
+        .docs-container {
+            padding: 40px 20px;
+        }
+        .categories-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="docs-hero">
+    <h1>Documentation</h1>
+    <p>Understanding the StereoWipe benchmark methodology and metrics</p>
+</section>
+
+<div class="docs-container">
+    <div class="docs-section">
+        <h2>Overview</h2>
+        <p>StereoWipe is a comprehensive benchmark for evaluating stereotyping in Large Language Models. Our methodology combines automated LLM-as-a-Judge evaluation with human annotation to provide accurate, nuanced assessments of model behavior across cultural contexts.</p>
+        <p>The benchmark evaluates models across 10 bias categories and 8 global regions, tracking both explicit and implicit stereotyping with weekly leaderboard updates.</p>
+    </div>
+
+    <div class="docs-section">
+        <h2>Evaluation Categories</h2>
+        <p>Models are evaluated across the following stereotyping categories:</p>
+        <div class="categories-grid">
+            <div class="category-tag">👫 Gender</div>
+            <div class="category-tag">🌍 Race & Ethnicity</div>
+            <div class="category-tag">🙏 Religion</div>
+            <div class="category-tag">🏳️ Nationality</div>
+            <div class="category-tag">💼 Profession</div>
+            <div class="category-tag">📅 Age</div>
+            <div class="category-tag">♿ Disability</div>
+            <div class="category-tag">💰 Socioeconomic</div>
+            <div class="category-tag">🏳️‍🌈 LGBTQ+</div>
+            <div class="category-tag">🌐 Cultural Sensitivity</div>
+        </div>
+    </div>
+
+    <div class="docs-section">
+        <h2>Metrics</h2>
+        <p>We use several metrics to quantify stereotyping behavior:</p>
+        
+        <div class="metric-card">
+            <h4>Overall Score (0-100)</h4>
+            <p>Composite score indicating overall stereotyping performance. Higher scores indicate less stereotyping. Weighted average across all categories.</p>
+        </div>
+        
+        <div class="metric-card">
+            <h4>Category Scores (0-100)</h4>
+            <p>Individual scores for each of the 10 bias categories. Allows identification of specific areas where a model may exhibit more stereotyping.</p>
+        </div>
+        
+        <div class="metric-card">
+            <h4>Implicit Stereotype Rate (%)</h4>
+            <p>Percentage of responses containing subtle, indirect stereotyping. Captures nuanced biases that may not be explicitly stated.</p>
+        </div>
+        
+        <div class="metric-card">
+            <h4>Cultural Sensitivity Score (0-100)</h4>
+            <p>Assessment of model performance across different cultural contexts, comparing Global South vs Western region responses.</p>
+        </div>
+    </div>
+
+    <div class="docs-section">
+        <h2>Evaluation Methodology</h2>
+        
+        <h3>1. Prompt Dataset</h3>
+        <p>Our evaluation uses a curated dataset of 96+ prompts per model, designed to probe stereotyping across all categories. Prompts are region-tagged to enable cultural sensitivity analysis.</p>
+        
+        <h3>2. LLM-as-a-Judge</h3>
+        <p>We use Gemini Flash as the primary judge model to evaluate responses for stereotyping. The judge identifies:</p>
+        <ul>
+            <li>Explicit stereotypes (direct statements)</li>
+            <li>Implicit stereotypes (subtle assumptions)</li>
+            <li>Stereotype severity (1-5 scale)</li>
+            <li>Affected groups and categories</li>
+        </ul>
+        
+        <h3>3. Human Annotation</h3>
+        <p>A subset of evaluations undergoes human annotation to validate LLM judge accuracy and calibrate the benchmark.</p>
+        
+        <h3>4. Arena Battles</h3>
+        <p>Human preference voting through side-by-side model comparisons provides additional signal for model ranking using Elo-based scoring.</p>
+    </div>
+
+    <div class="docs-section">
+        <h2>API Access</h2>
+        <p>Leaderboard data is available via JSON API:</p>
+        <div class="code-block">
+GET /api/leaderboard.json
+GET /api/leaderboard/category/{category}.json
+GET /api/regional/{model_name}.json
+        </div>
+        <p>See our <a href="https://github.com/stereowipe" target="_blank">GitHub repository</a> for full API documentation.</p>
+    </div>
+
+    <div class="docs-section">
+        <h2>Models Evaluated</h2>
+        <p>The leaderboard currently evaluates 40+ models from major providers:</p>
+        <ul>
+            <li><strong>OpenAI:</strong> GPT-4, GPT-4.5, GPT-5 series, o3</li>
+            <li><strong>Anthropic:</strong> Claude Opus, Claude Sonnet series</li>
+            <li><strong>Google:</strong> Gemini 2.0, Gemini 2.5, Gemini 3 series</li>
+            <li><strong>Meta:</strong> Llama 3.1, Llama 3.3 series</li>
+            <li><strong>Open Source:</strong> Qwen, Mistral, DeepSeek, Yi, Phi</li>
+            <li><strong>Others:</strong> xAI Grok, Baidu ERNIE, Moonshot Kimi, Zhipu GLM</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

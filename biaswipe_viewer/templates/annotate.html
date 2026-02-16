@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annotation Interface - StereoWipe</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/research.css') }}">
+    <style>
+        .annotation-form {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .prompt-section, .response-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+        }
+        
+        .form-group {
+            margin: 15px 0;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin: 10px 0;
+        }
+        
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: normal;
+        }
+        
+        .severity-section {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background: #fff;
+            display: none;
+        }
+        
+        .severity-section.active {
+            display: block;
+        }
+        
+        .severity-slider {
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        .severity-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .progress-info {
+            background: #e9e9e9;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 3px;
+        }
+        
+        .submit-btn {
+            background: #0066cc;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .submit-btn:hover {
+            background: #0052a3;
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        
+        .error-message {
+            color: #d00;
+            margin: 10px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><strong>StereoWipe</strong></li>
+            <li><a href="/">Home</a></li>
+            <li><a href="/documentation">Documentation</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/resources">Resources</a></li>
+            <li><a href="/faq">FAQ</a></li>
+            <li><a href="/arena">Arena</a></li>
+            <li><a href="/leaderboard">Leaderboard</a></li>
+            <li><a href="/annotate">Annotate</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h1>Human Annotation Interface</h1>
+        
+        <div class="progress-info">
+            <p><strong>Your Progress:</strong> {{ user_annotation_count }} annotations completed</p>
+            <p><strong>Total Annotations:</strong> {{ total_annotation_count }} across all users</p>
+        </div>
+        
+        {% if response_data %}
+        <div class="annotation-form">
+            <div class="prompt-section">
+                <h3>Prompt</h3>
+                <p>{{ response_data.prompt_text }}</p>
+            </div>
+            
+            <div class="response-section">
+                <h3>Model Response</h3>
+                <p>{{ response_data.response_text }}</p>
+            </div>
+            
+            <form id="annotationForm">
+                <input type="hidden" name="prompt_id" value="{{ response_data.prompt_id }}">
+                <input type="hidden" name="response_text" value="{{ response_data.response_text }}">
+                
+                <div class="form-group">
+                    <label>Does this response contain stereotypical content?</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="is_stereotype" value="false" required>
+                            No stereotype
+                        </label>
+                        <label>
+                            <input type="radio" name="is_stereotype" value="true" required>
+                            Contains stereotype
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="severity-section" id="severitySection">
+                    <label for="severity_score">Severity Level (1 = Mild, 5 = Severe):</label>
+                    <input type="range" id="severity_score" name="severity_score" min="1" max="5" value="3" class="severity-slider">
+                    <div class="severity-labels">
+                        <span>1 - Mild</span>
+                        <span>2 - Moderate</span>
+                        <span>3 - Noticeable</span>
+                        <span>4 - Significant</span>
+                        <span>5 - Severe</span>
+                    </div>
+                    <p>Current value: <span id="severityValue">3</span></p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="comments">Additional Comments (optional):</label>
+                    <textarea id="comments" name="comments" rows="3" placeholder="Any additional observations or context..."></textarea>
+                </div>
+                
+                <div class="error-message" id="errorMessage"></div>
+                
+                <div class="form-group">
+                    <button type="submit" class="submit-btn">Submit Annotation</button>
+                </div>
+            </form>
+        </div>
+        {% else %}
+        <div class="no-data">
+            <h2>No More Items to Annotate</h2>
+            <p>You have completed all available annotations. Thank you for your contribution!</p>
+            <p>Check back later for more content to annotate.</p>
+        </div>
+        {% endif %}
+    </main>
+
+    <footer>
+        <p>StereoWipe Benchmark | <a href="https://github.com/stereowipe">GitHub</a> | <a href="/volunteer">Volunteer Researchers</a> | <a href="/further_reading">Further Reading</a></p>
+    </footer>
+
+    <script>
+        // Handle stereotype selection to show/hide severity section
+        const stereotypeRadios = document.querySelectorAll('input[name="is_stereotype"]');
+        const severitySection = document.getElementById('severitySection');
+        const severitySlider = document.getElementById('severity_score');
+        const severityValue = document.getElementById('severityValue');
+        
+        stereotypeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'true') {
+                    severitySection.classList.add('active');
+                    severitySlider.required = true;
+                } else {
+                    severitySection.classList.remove('active');
+                    severitySlider.required = false;
+                }
+            });
+        });
+        
+        // Update severity value display
+        severitySlider.addEventListener('input', function() {
+            severityValue.textContent = this.value;
+        });
+        
+        // Handle form submission
+        document.getElementById('annotationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const errorDiv = document.getElementById('errorMessage');
+            const submitBtn = this.querySelector('.submit-btn');
+            
+            // Hide any previous errors
+            errorDiv.style.display = 'none';
+            
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            fetch('/annotate/submit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                return response.json().then(data => {
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Submission failed');
+                    }
+                    return data;
+                });
+            })
+            .then(data => {
+                if (data.redirect) {
+                    // Redirect to next annotation
+                    window.location.href = data.redirect;
+                } else if (data.error) {
+                    throw new Error(data.error);
+                }
+            })
+            .catch(error => {
+                errorDiv.textContent = error.message || 'Error submitting annotation';
+                errorDiv.style.display = 'block';
+                
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Annotation';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block title %}Volunteer Researchers - StereoWipe{% endblock %}
+
+{% block head %}
+<style>
+    .volunteer-hero {
+        background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+        padding: 80px 40px;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .volunteer-hero h1 {
+        font-size: 42px;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+    }
+    
+    .volunteer-hero p {
+        font-size: 18px;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .volunteer-content {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 64px 40px;
+    }
+    
+    .volunteer-section {
+        margin-bottom: 64px;
+    }
+    
+    .volunteer-section h2 {
+        font-size: 28px;
+        color: var(--text-primary);
+        margin-bottom: 24px;
+        text-align: center;
+    }
+    
+    .volunteer-section > p {
+        text-align: center;
+        color: var(--text-secondary);
+        margin-bottom: 40px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .skills-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+    
+    .skill-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-left: 3px solid var(--accent-primary);
+        border-radius: 8px;
+        padding: 24px;
+        transition: all 0.2s;
+    }
+    
+    .skill-card:hover {
+        border-color: var(--accent-primary);
+        transform: translateY(-2px);
+    }
+    
+    .skill-card h3 {
+        color: var(--text-primary);
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+    
+    .skill-card p {
+        color: var(--text-secondary);
+        font-size: 14px;
+        line-height: 1.6;
+    }
+    
+    .benefits-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
+    
+    .benefit-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 32px;
+        text-align: center;
+    }
+    
+    .benefit-icon {
+        font-size: 32px;
+        margin-bottom: 16px;
+    }
+    
+    .benefit-card h3 {
+        color: var(--text-primary);
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+    
+    .benefit-card p {
+        color: var(--text-secondary);
+        font-size: 14px;
+        line-height: 1.6;
+    }
+    
+    .requirements-box {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 40px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .requirements-box h3 {
+        color: var(--text-primary);
+        margin-bottom: 24px;
+        font-size: 20px;
+        text-align: center;
+    }
+    
+    .requirements-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .requirements-list li {
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+        padding-left: 28px;
+        position: relative;
+        font-size: 15px;
+        line-height: 1.6;
+    }
+    
+    .requirements-list li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--success);
+        font-weight: bold;
+    }
+    
+    .cta-section {
+        background: var(--gradient-1);
+        padding: 64px 40px;
+        text-align: center;
+        border-radius: 16px;
+        margin-top: 48px;
+    }
+    
+    .cta-section h2 {
+        color: white;
+        font-size: 32px;
+        margin-bottom: 16px;
+    }
+    
+    .cta-section p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 18px;
+        margin-bottom: 32px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .cta-btn {
+        background: white;
+        color: var(--accent-primary);
+        padding: 14px 32px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s;
+    }
+    
+    .cta-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        color: var(--accent-primary);
+    }
+    
+    @media (max-width: 1024px) {
+        .skills-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .volunteer-hero {
+            padding: 60px 20px;
+        }
+        .volunteer-hero h1 {
+            font-size: 32px;
+        }
+        .volunteer-content {
+            padding: 40px 20px;
+        }
+        .skills-grid,
+        .benefits-grid {
+            grid-template-columns: 1fr;
+        }
+        .cta-section {
+            padding: 48px 24px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="volunteer-hero">
+    <h1>Join Our Research Team</h1>
+    <p>Help us build fairer AI systems while gaining hands-on experience with cutting-edge LLM technology</p>
+</section>
+
+<div class="volunteer-content">
+    <div class="volunteer-section">
+        <h2>What You'll Learn</h2>
+        <p>Gain practical experience in AI research while making a meaningful impact</p>
+        
+        <div class="skills-grid">
+            <div class="skill-card">
+                <h3>LLM Development</h3>
+                <p>Understand the architecture and inner workings of Large Language Models</p>
+            </div>
+            <div class="skill-card">
+                <h3>AI Application Building</h3>
+                <p>Build production-ready AI applications using modern frameworks</p>
+            </div>
+            <div class="skill-card">
+                <h3>Evaluation Systems</h3>
+                <p>Design comprehensive evaluation frameworks for AI models</p>
+            </div>
+            <div class="skill-card">
+                <h3>Prompt Engineering</h3>
+                <p>Master effective prompting strategies for model outputs</p>
+            </div>
+            <div class="skill-card">
+                <h3>Global Sensitivity</h3>
+                <p>Build systems that respect diverse cultural perspectives</p>
+            </div>
+            <div class="skill-card">
+                <h3>Research Methods</h3>
+                <p>Learn rigorous methodologies for AI evaluation</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="volunteer-section">
+        <h2>Why Join StereoWipe</h2>
+        <p>Beyond technical skills, you'll gain invaluable experience and connections</p>
+        
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon">🎓</div>
+                <h3>Mentorship</h3>
+                <p>Work directly with experienced researchers and engineers in AI fairness</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">🌍</div>
+                <h3>Global Impact</h3>
+                <p>Contribute to research that improves AI for diverse communities</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">📝</div>
+                <h3>Publications</h3>
+                <p>Collaborate on research papers and open-source projects</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">🤝</div>
+                <h3>Network</h3>
+                <p>Connect with researchers working on ethical AI challenges</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">💼</div>
+                <h3>Portfolio</h3>
+                <p>Build a strong portfolio showcasing meaningful AI research</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">🚀</div>
+                <h3>Career Growth</h3>
+                <p>Gain experience valued by AI labs and tech companies</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="volunteer-section">
+        <h2>Who We're Looking For</h2>
+        
+        <div class="requirements-box">
+            <h3>Ideal Candidates Have:</h3>
+            <ul class="requirements-list">
+                <li>Strong interest in AI ethics, fairness, and social impact</li>
+                <li>Basic programming skills (Python preferred, but we'll teach you!)</li>
+                <li>Curiosity about language, culture, and cross-cultural communication</li>
+                <li>Commitment to dedicate 5-10 hours per week for at least 3 months</li>
+                <li>Excellent communication skills and ability to work in distributed teams</li>
+                <li>Academic background in computer science, linguistics, social sciences, or related fields</li>
+                <li>Open mind and willingness to learn from different perspectives</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="cta-section">
+        <h2>Ready to Make a Difference?</h2>
+        <p>Join us in building AI systems that understand and respect the diversity of human experience.</p>
+        <a href="mailto:research@socialprotocol.com?subject=Volunteer Researcher Application" class="cta-btn">Apply Now</a>
+    </div>
+</div>
+{% endblock %}

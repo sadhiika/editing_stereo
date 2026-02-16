@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}FAQ - StereoWipe{% endblock %}
+
+{% block head %}
+<style>
+    .faq-hero {
+        background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+        padding: 80px 40px;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .faq-hero h1 {
+        font-size: 42px;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+    }
+    
+    .faq-hero p {
+        font-size: 18px;
+        color: var(--text-secondary);
+    }
+    
+    .faq-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 64px 40px;
+    }
+    
+    .faq-item {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        margin-bottom: 16px;
+        overflow: hidden;
+    }
+    
+    .faq-question {
+        padding: 24px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background 0.2s;
+    }
+    
+    .faq-question:hover {
+        background: var(--bg-tertiary);
+    }
+    
+    .faq-question h3 {
+        font-size: 16px;
+        color: var(--text-primary);
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .faq-icon {
+        color: var(--text-muted);
+        font-size: 20px;
+        transition: transform 0.2s;
+    }
+    
+    .faq-item.open .faq-icon {
+        transform: rotate(45deg);
+    }
+    
+    .faq-answer {
+        padding: 0 24px;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .faq-item.open .faq-answer {
+        padding: 0 24px 24px;
+        max-height: 500px;
+    }
+    
+    .faq-answer p {
+        color: var(--text-secondary);
+        font-size: 15px;
+        line-height: 1.7;
+        margin-bottom: 12px;
+    }
+    
+    .faq-answer p:last-child {
+        margin-bottom: 0;
+    }
+    
+    .faq-category {
+        font-size: 13px;
+        color: var(--accent-primary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 24px;
+        margin-top: 48px;
+    }
+    
+    .faq-category:first-child {
+        margin-top: 0;
+    }
+    
+    @media (max-width: 768px) {
+        .faq-hero {
+            padding: 60px 20px;
+        }
+        .faq-hero h1 {
+            font-size: 32px;
+        }
+        .faq-container {
+            padding: 40px 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="faq-hero">
+    <h1>Frequently Asked Questions</h1>
+    <p>Common questions about StereoWipe and our methodology</p>
+</section>
+
+<div class="faq-container">
+    <div class="faq-category">General</div>
+    
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <h3>What is StereoWipe?</h3>
+            <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">
+            <p>StereoWipe is a comprehensive benchmark for evaluating stereotyping in Large Language Models. We provide a public leaderboard that ranks 40+ AI models based on their stereotyping behavior across 10 categories including gender, race, religion, nationality, and more.</p>
+        </div>
+    </div>
+    
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <h3>Why is this important?</h3>
+            <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">
+            <p>AI systems are increasingly used in high-stakes decisions affecting people's lives. Stereotyping in these systems can perpetuate harmful biases and discrimination. Our benchmark provides transparency and accountability, helping developers identify and address stereotyping in their models.</p>
+        </div>
+    </div>
+    
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <h3>How often is the leaderboard updated?</h3>
+            <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">
+            <p>The leaderboard is updated weekly with fresh evaluations. This allows us to track model improvements over time and ensure our rankings reflect current model behavior.</p>
+        </div>
+    </div>
+    
+    <div class="faq-category">Methodology</div>
+    
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <h3>How do you evaluate models?</h3>
+            <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">
+            <p>We use a combination of LLM-as-a-Judge evaluation and human annotation. Models are prompted with a curated dataset of 96+ prompts designed to probe stereotyping behavior. Gemini Flash serves as the primary judge, identifying both explicit and implicit stereotypes in model responses.</p>
+        </div>
+    </div>
+    
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <h3>What's the difference between explicit and implicit stereotyping?</h3>
+            <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">
+            <p><strong>Explicit stereotypes</strong> are direct statements that make assumptions about groups (e.g., "Women are naturally better at caregiving").</p>
+            <p><strong>Implicit stereotypes</strong> are subtle, indirect assumptions embedded in responses without explicit statements (e.g., using male pronouns when discussing engineers without specification).</p>
+        </div>
+    </div>
+    
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <h3>What does "higher score is better" mean?</h3>
+            <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">
+            <p>Our scoring system ranges from 0-100, where higher scores indicate less stereotyping. A model with a score of 95 exhibits less stereotyping behavior than one with a score of 75. The score reflects how well the model avoids reinforcing harmful stereotypes across all evaluated categories.</p>
+        </div>
+    </div>
+    
+    <div class="faq-category">Arena</div>
+    
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <h3>What is the Arena?</h3>
+            <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">
+            <p>The Arena is our human preference voting system where users compare responses from two models side-by-side and vote for the better one. This provides additional signal for our rankings through Elo-based scoring, similar to chess rankings.</p>
+        </div>
+    </div>
+    
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <h3>How can I contribute to the Arena?</h3>
+            <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">
+            <p>Simply visit the <a href="/arena">Arena page</a> and start comparing model responses. Each vote you cast helps improve our rankings and contributes to more accurate model assessments. No account required.</p>
+        </div>
+    </div>
+    
+    <div class="faq-category">Data & API</div>
+    
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <h3>Is the data publicly available?</h3>
+            <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">
+            <p>Yes! Leaderboard data is available via our JSON API at <code>/api/leaderboard.json</code>. Our methodology, prompts, and evaluation code are open-source and available on <a href="https://github.com/stereowipe" target="_blank">GitHub</a>.</p>
+        </div>
+    </div>
+    
+    <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+            <h3>Can I request a new model to be evaluated?</h3>
+            <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">
+            <p>Yes! We welcome requests for new model evaluations. Please open an issue on our GitHub repository with the model name and API access details. We prioritize models with significant user adoption.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleFaq(element) {
+    const item = element.parentElement;
+    item.classList.toggle('open');
+}
+</script>
+{% endblock %}
