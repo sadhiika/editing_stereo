@@ -134,6 +134,21 @@ class Database:
                     reasoning TEXT,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
+
+                -- Rubric-based judge outputs (Phase 2 pipeline)
+                CREATE TABLE IF NOT EXISTS rubric_evaluations (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    prompt_id TEXT NOT NULL,
+                    model_name TEXT NOT NULL,
+                    judge_name TEXT NOT NULL,
+                    answers_json TEXT NOT NULL,
+                    reasoning_json TEXT NOT NULL,
+                    raw_score REAL NOT NULL,
+                    normalized_score REAL NOT NULL,
+                    severity_0_to_5 REAL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(prompt_id, model_name, judge_name)
+                );
                 
                 -- Prompts dataset
                 CREATE TABLE IF NOT EXISTS prompts (
@@ -178,6 +193,8 @@ class Database:
                     ON regional_scores(snapshot_date, model_name);
                 CREATE INDEX IF NOT EXISTS idx_detailed_evals_model_category 
                     ON detailed_evaluations(model_name, prompt_category);
+                CREATE INDEX IF NOT EXISTS idx_rubric_evals_prompt_model
+                    ON rubric_evaluations(prompt_id, model_name);
                 CREATE INDEX IF NOT EXISTS idx_prompts_category_region 
                     ON prompts(category, region);
             """)
@@ -270,6 +287,61 @@ class Database:
             if limit:
                 query += " LIMIT ?"
                 params.append(limit)
+            cursor = conn.execute(query, params)
+            return [dict(row) for row in cursor.fetchall()]
+
+    def insert_or_update_rubric_evaluation(self, prompt_id: str, model_name: str,
+                                           judge_name: str, answers_json: str,
+                                           reasoning_json: str, raw_score: float,
+                                           normalized_score: float,
+                                           severity_0_to_5: Optional[float] = None) -> int:
+        """Insert or update rubric evaluation for a prompt/model/judge combination."""
+        with self._get_db() as conn:
+            cursor = conn.execute("""
+                INSERT INTO rubric_evaluations
+                (prompt_id, model_name, judge_name, answers_json, reasoning_json,
+                 raw_score, normalized_score, severity_0_to_5)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(prompt_id, model_name, judge_name)
+                DO UPDATE SET
+                    answers_json=excluded.answers_json,
+                    reasoning_json=excluded.reasoning_json,
+                    raw_score=excluded.raw_score,
+                    normalized_score=excluded.normalized_score,
+                    severity_0_to_5=excluded.severity_0_to_5,
+                    created_at=CURRENT_TIMESTAMP
+            """, (
+                prompt_id, model_name, judge_name, answers_json, reasoning_json,
+                raw_score, normalized_score, severity_0_to_5
+            ))
+            return cursor.lastrowid
+
+    def get_pending_rubric_responses(self, judge_name: str, model_name: Optional[str] = None,
+                                     limit: Optional[int] = None) -> List[Dict[str, Any]]:
+        """Get rows from responses that are not yet rubric-evaluated by the given judge."""
+        with self._get_db() as conn:
+            query = """
+                SELECT r.prompt_id, r.model_name, r.response_text, p.prompt_text, p.category
+                FROM responses r
+                LEFT JOIN prompts p ON p.prompt_id = r.prompt_id
+                LEFT JOIN rubric_evaluations e
+                    ON e.prompt_id = r.prompt_id
+                   AND e.model_name = r.model_name
+                   AND e.judge_name = ?
+                WHERE e.id IS NULL
+            """
+            params: List[Any] = [judge_name]
+
+            if model_name:
+                query += " AND r.model_name = ?"
+                params.append(model_name)
+
+            query += " ORDER BY r.collected_at ASC"
+
+            if limit:
+                query += " LIMIT ?"
+                params.append(limit)
+
             cursor = conn.execute(query, params)
             return [dict(row) for row in cursor.fetchall()]
     
