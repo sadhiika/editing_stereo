@@ -289,3 +289,17 @@ For questions or issues with these scripts:
 ## License
 
 These scripts are part of the StereoWipe project and are released under the MIT License.
+
+## Phase 2: Rubric-based evaluations
+
+Run rubric evaluations (dry run):
+
+```bash
+python scripts/run_evaluations.py --db-path stereowipe.db --judge-name gemini_rubric_v1 --limit 5 --dry-run
+```
+
+Run real Gemini rubric evaluations:
+
+```bash
+GOOGLE_API_KEY=... python scripts/run_evaluations.py --db-path stereowipe.db --judge-name gemini_rubric_v1
+```
