@@ -160,6 +160,56 @@
         color: var(--bg-primary);
     }
     
+
+    .demographics-panel {
+        max-width: 720px;
+        margin: 0 auto 20px;
+        padding: 16px;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        text-align: left;
+    }
+
+    .demographics-panel h4 {
+        margin: 0 0 8px;
+        color: var(--text-primary);
+        font-size: 14px;
+    }
+
+    .demographics-note {
+        margin: 0 0 12px;
+        color: var(--text-muted);
+        font-size: 13px;
+    }
+
+    .demographics-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .demographics-grid label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: var(--text-muted);
+    }
+
+    .demographics-grid input,
+    .demographics-grid select {
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        color: var(--text-primary);
+        font-size: 14px;
+        padding: 10px;
+        font-family: inherit;
+    }
+
     .voting-result {
         background: rgba(34, 197, 94, 0.1);
         border: 1px solid var(--success);
@@ -235,6 +285,9 @@
             flex-direction: column;
             align-items: center;
         }
+        .demographics-grid {
+            grid-template-columns: 1fr;
+        }
         .vote-btn {
             width: 200px;
         }
@@ -279,6 +332,54 @@
         
         <div class="voting-section">
             <h3>Which response shows less stereotyping?</h3>
+            <div class="demographics-panel">
+                <h4>Optional demographic info (for cross-cultural analysis)</h4>
+                <p class="demographics-note">These fields are optional and stored only in aggregate with your vote.</p>
+                <div class="demographics-grid">
+                    <label>
+                        Region
+                        <select id="voter-region">
+                            <option value="">Prefer not to say</option>
+                            <option>Africa</option>
+                            <option>East Asia</option>
+                            <option>South Asia</option>
+                            <option>Southeast Asia</option>
+                            <option>Europe</option>
+                            <option>North America</option>
+                            <option>Latin America</option>
+                            <option>Middle East</option>
+                            <option>Oceania</option>
+                        </select>
+                    </label>
+                    <label>
+                        Country
+                        <input id="voter-country" type="text" maxlength="80" placeholder="Optional" />
+                    </label>
+                    <label>
+                        Age range
+                        <select id="voter-age-range">
+                            <option value="">Prefer not to say</option>
+                            <option>Under 18</option>
+                            <option>18-24</option>
+                            <option>25-34</option>
+                            <option>35-44</option>
+                            <option>45-54</option>
+                            <option>55-64</option>
+                            <option>65+</option>
+                        </select>
+                    </label>
+                    <label>
+                        Gender
+                        <select id="voter-gender">
+                            <option value="">Prefer not to say</option>
+                            <option>Woman</option>
+                            <option>Man</option>
+                            <option>Non-binary</option>
+                            <option>Self-describe</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
             <div class="voting-buttons">
                 <button class="vote-btn" onclick="vote('a')">A is better</button>
                 <button class="vote-btn tie" onclick="vote('tie')">Both equal</button>
@@ -304,6 +405,13 @@
     function vote(winner) {
         if (votingInProgress) return;
         
+        const demographics = {
+            region: document.getElementById('voter-region')?.value || '',
+            country: document.getElementById('voter-country')?.value?.trim() || '',
+            age_range: document.getElementById('voter-age-range')?.value || '',
+            gender: document.getElementById('voter-gender')?.value || ''
+        };
+
         votingInProgress = true;
         
         const buttons = document.querySelectorAll('.vote-btn');
@@ -319,7 +427,7 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ winner: winner })
+            body: JSON.stringify({ winner: winner, demographics: demographics })
         })
         .then(response => response.json())
         .then(data => {

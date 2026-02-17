@@ -335,6 +335,7 @@ def arena_vote():
     try:
         data = request.get_json()
         winner = data.get('winner')
+        demographics = data.get('demographics', {})
         
         if winner not in ['a', 'b', 'tie']:
             return jsonify({'success': False, 'error': 'Invalid winner'}), 400
@@ -362,7 +363,12 @@ def arena_vote():
             response_a=battle_data['response_a'],
             model_b=battle_data['model_b'],
             response_b=battle_data['response_b'],
-            winner=winner
+            winner=winner,
+            voter_region=demographics.get('region'),
+            voter_country=demographics.get('country'),
+            voter_age_range=demographics.get('age_range'),
+            voter_gender=demographics.get('gender'),
+            prompt_category=battle_data.get('prompt_category')
         )
         
         # Clear current battle from session (prevents double voting)
@@ -377,6 +383,21 @@ def arena_vote():
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/arena/demographics.json')
+def api_arena_demographics():
+    """JSON API for aggregate arena demographic distributions."""
+    try:
+        return jsonify({
+            'success': True,
+            'data': db.get_arena_demographic_breakdown()
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 
 if __name__ == '__main__':
