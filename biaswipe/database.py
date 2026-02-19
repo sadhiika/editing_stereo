@@ -64,6 +64,18 @@ class Database:
                     winner TEXT NOT NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
+
+                -- Raw model responses collected from providers
+                CREATE TABLE IF NOT EXISTS responses (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    prompt_id TEXT NOT NULL,
+                    model_name TEXT NOT NULL,
+                    response_text TEXT NOT NULL,
+                    provider TEXT,
+                    metadata_json TEXT,
+                    collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(prompt_id, model_name)
+                );
                 
                 -- Leaderboard snapshots for weekly rankings
                 CREATE TABLE IF NOT EXISTS leaderboard_snapshots (
@@ -122,6 +134,21 @@ class Database:
                     reasoning TEXT,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
+
+                -- Rubric-based judge outputs (Phase 2 pipeline)
+                CREATE TABLE IF NOT EXISTS rubric_evaluations (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    prompt_id TEXT NOT NULL,
+                    model_name TEXT NOT NULL,
+                    judge_name TEXT NOT NULL,
+                    answers_json TEXT NOT NULL,
+                    reasoning_json TEXT NOT NULL,
+                    raw_score REAL NOT NULL,
+                    normalized_score REAL NOT NULL,
+                    severity_0_to_5 REAL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(prompt_id, model_name, judge_name)
+                );
                 
                 -- Prompts dataset
                 CREATE TABLE IF NOT EXISTS prompts (
@@ -156,6 +183,8 @@ class Database:
                     ON evaluations(created_at);
                 CREATE INDEX IF NOT EXISTS idx_human_annotations_session 
                     ON human_annotations(session_id);
+                CREATE INDEX IF NOT EXISTS idx_responses_prompt_model
+                    ON responses(prompt_id, model_name);
                 CREATE INDEX IF NOT EXISTS idx_arena_battles_session 
                     ON arena_battles(session_id);
                 CREATE INDEX IF NOT EXISTS idx_leaderboard_date 
@@ -164,9 +193,31 @@ class Database:
                     ON regional_scores(snapshot_date, model_name);
                 CREATE INDEX IF NOT EXISTS idx_detailed_evals_model_category 
                     ON detailed_evaluations(model_name, prompt_category);
+                CREATE INDEX IF NOT EXISTS idx_rubric_evals_prompt_model
+                    ON rubric_evaluations(prompt_id, model_name);
                 CREATE INDEX IF NOT EXISTS idx_prompts_category_region 
                     ON prompts(category, region);
             """)
+
+            # Keep older DB files compatible with newer arena telemetry fields.
+            self._ensure_arena_demographic_columns(conn)
+
+    def _ensure_arena_demographic_columns(self, conn: sqlite3.Connection):
+        """Add demographic columns to arena_battles when missing."""
+        cursor = conn.execute("PRAGMA table_info(arena_battles)")
+        existing_columns = {row[1] for row in cursor.fetchall()}
+
+        required_columns = {
+            "voter_region": "TEXT",
+            "voter_country": "TEXT",
+            "voter_age_range": "TEXT",
+            "voter_gender": "TEXT",
+            "prompt_category": "TEXT"
+        }
+
+        for column_name, column_type in required_columns.items():
+            if column_name not in existing_columns:
+                conn.execute(f"ALTER TABLE arena_battles ADD COLUMN {column_name} {column_type}")
     
     @contextmanager
     def _get_db(self):
@@ -206,6 +257,93 @@ class Database:
             """, (prompt_id, prompt_text, model_name, response_text, judge_name,
                   is_stereotype, severity_score, reasoning))
             return cursor.lastrowid
+
+    def insert_or_update_response(self, prompt_id: str, model_name: str,
+                                  response_text: str, provider: Optional[str] = None,
+                                  metadata_json: Optional[str] = None) -> int:
+        """Insert or update a model response for a prompt."""
+        with self._get_db() as conn:
+            cursor = conn.execute("""
+                INSERT INTO responses (prompt_id, model_name, response_text, provider, metadata_json)
+                VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT(prompt_id, model_name)
+                DO UPDATE SET
+                    response_text=excluded.response_text,
+                    provider=excluded.provider,
+                    metadata_json=excluded.metadata_json,
+                    collected_at=CURRENT_TIMESTAMP
+            """, (prompt_id, model_name, response_text, provider, metadata_json))
+            return cursor.lastrowid
+
+    def get_responses(self, model_name: Optional[str] = None, limit: Optional[int] = None) -> List[Dict[str, Any]]:
+        """Get collected responses optionally filtered by model."""
+        with self._get_db() as conn:
+            query = "SELECT * FROM responses"
+            params: List[Any] = []
+            if model_name:
+                query += " WHERE model_name = ?"
+                params.append(model_name)
+            query += " ORDER BY collected_at DESC"
+            if limit:
+                query += " LIMIT ?"
+                params.append(limit)
+            cursor = conn.execute(query, params)
+            return [dict(row) for row in cursor.fetchall()]
+
+    def insert_or_update_rubric_evaluation(self, prompt_id: str, model_name: str,
+                                           judge_name: str, answers_json: str,
+                                           reasoning_json: str, raw_score: float,
+                                           normalized_score: float,
+                                           severity_0_to_5: Optional[float] = None) -> int:
+        """Insert or update rubric evaluation for a prompt/model/judge combination."""
+        with self._get_db() as conn:
+            cursor = conn.execute("""
+                INSERT INTO rubric_evaluations
+                (prompt_id, model_name, judge_name, answers_json, reasoning_json,
+                 raw_score, normalized_score, severity_0_to_5)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(prompt_id, model_name, judge_name)
+                DO UPDATE SET
+                    answers_json=excluded.answers_json,
+                    reasoning_json=excluded.reasoning_json,
+                    raw_score=excluded.raw_score,
+                    normalized_score=excluded.normalized_score,
+                    severity_0_to_5=excluded.severity_0_to_5,
+                    created_at=CURRENT_TIMESTAMP
+            """, (
+                prompt_id, model_name, judge_name, answers_json, reasoning_json,
+                raw_score, normalized_score, severity_0_to_5
+            ))
+            return cursor.lastrowid
+
+    def get_pending_rubric_responses(self, judge_name: str, model_name: Optional[str] = None,
+                                     limit: Optional[int] = None) -> List[Dict[str, Any]]:
+        """Get rows from responses that are not yet rubric-evaluated by the given judge."""
+        with self._get_db() as conn:
+            query = """
+                SELECT r.prompt_id, r.model_name, r.response_text, p.prompt_text, p.category
+                FROM responses r
+                LEFT JOIN prompts p ON p.prompt_id = r.prompt_id
+                LEFT JOIN rubric_evaluations e
+                    ON e.prompt_id = r.prompt_id
+                   AND e.model_name = r.model_name
+                   AND e.judge_name = ?
+                WHERE e.id IS NULL
+            """
+            params: List[Any] = [judge_name]
+
+            if model_name:
+                query += " AND r.model_name = ?"
+                params.append(model_name)
+
+            query += " ORDER BY r.collected_at ASC"
+
+            if limit:
+                query += " LIMIT ?"
+                params.append(limit)
+
+            cursor = conn.execute(query, params)
+            return [dict(row) for row in cursor.fetchall()]
     
     def insert_evaluation_batch(self, evaluations: List[Dict[str, Any]]) -> int:
         """Insert multiple evaluation results in a single transaction.
@@ -344,7 +482,12 @@ class Database:
     def insert_arena_battle(self, session_id: str, prompt_id: str,
                            model_a: str, response_a: str,
                            model_b: str, response_b: str,
-                           winner: str) -> int:
+                           winner: str,
+                           voter_region: str = None,
+                           voter_country: str = None,
+                           voter_age_range: str = None,
+                           voter_gender: str = None,
+                           prompt_category: str = None) -> int:
         """Insert an arena battle result.
         
         Args:
@@ -357,11 +500,36 @@ class Database:
             cursor = conn.execute("""
                 INSERT INTO arena_battles
                 (session_id, prompt_id, model_a, response_a,
-                 model_b, response_b, winner)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                 model_b, response_b, winner,
+                 voter_region, voter_country, voter_age_range, voter_gender, prompt_category)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (session_id, prompt_id, model_a, response_a,
-                  model_b, response_b, winner))
+                  model_b, response_b, winner,
+                  voter_region, voter_country, voter_age_range, voter_gender, prompt_category))
             return cursor.lastrowid
+
+    def get_arena_demographic_breakdown(self) -> Dict[str, Dict[str, int]]:
+        """Get demographic distributions captured in arena_battles."""
+        with self._get_db() as conn:
+            dimensions = {
+                "voter_region": "region",
+                "voter_country": "country",
+                "voter_age_range": "age_range",
+                "voter_gender": "gender"
+            }
+            breakdown = {}
+
+            for column_name, output_key in dimensions.items():
+                cursor = conn.execute(f"""
+                    SELECT {column_name} as value, COUNT(*) as count
+                    FROM arena_battles
+                    WHERE {column_name} IS NOT NULL AND TRIM({column_name}) != ''
+                    GROUP BY {column_name}
+                    ORDER BY count DESC
+                """)
+                breakdown[output_key] = {row['value']: row['count'] for row in cursor.fetchall()}
+
+            return breakdown
     
     def get_arena_battles(self, model_name: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get arena battles, optionally filtered by model."""
@@ -464,9 +632,13 @@ class Database:
         with self._get_db() as conn:
             # Get a random prompt that has at least 2 different model responses
             cursor = conn.execute("""
-                SELECT prompt_id, prompt_text, COUNT(DISTINCT model_name) as model_count
-                FROM evaluations
-                GROUP BY prompt_id, prompt_text
+                SELECT e.prompt_id,
+                       e.prompt_text,
+                       p.category as prompt_category,
+                       COUNT(DISTINCT e.model_name) as model_count
+                FROM evaluations e
+                LEFT JOIN prompts p ON p.prompt_id = e.prompt_id
+                GROUP BY e.prompt_id, e.prompt_text, p.category
                 HAVING model_count >= 2
                 ORDER BY RANDOM()
                 LIMIT 1
@@ -478,6 +650,7 @@ class Database:
             
             prompt_id = prompt_data['prompt_id']
             prompt_text = prompt_data['prompt_text']
+            prompt_category = prompt_data['prompt_category']
             
             # Get two different model responses for this prompt
             cursor = conn.execute("""
@@ -495,6 +668,7 @@ class Database:
             return {
                 'prompt_id': prompt_id,
                 'prompt_text': prompt_text,
+                'prompt_category': prompt_category,
                 'model_a': responses[0]['model_name'],
                 'response_a': responses[0]['response_text'],
                 'model_b': responses[1]['model_name'],

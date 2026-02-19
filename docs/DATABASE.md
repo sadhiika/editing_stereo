@@ -40,6 +40,11 @@ Stores preference data from head-to-head comparisons:
 - `model_a`, `model_b`: Names of competing models
 - `response_a`, `response_b`: Model responses
 - `winner`: 'a', 'b', or 'tie'
+- `voter_region`: Optional self-reported region
+- `voter_country`: Optional self-reported country
+- `voter_age_range`: Optional self-reported age bucket
+- `voter_gender`: Optional self-reported gender
+- `prompt_category`: Optional prompt category for analysis
 - `created_at`: Timestamp
 
 ## CLI Integration

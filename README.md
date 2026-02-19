@@ -289,3 +289,46 @@ For questions or issues with these scripts:
 ## License
 
 These scripts are part of the StereoWipe project and are released under the MIT License.
+
+## Phase 2: Rubric-based evaluations
+
+Run rubric evaluations (dry run):
+
+```bash
+python scripts/run_evaluations.py --db-path stereowipe.db --judge-name gemini_rubric_v1 --limit 5 --dry-run
+```
+
+Run real Gemini rubric evaluations:
+
+```bash
+GOOGLE_API_KEY=... python scripts/run_evaluations.py --db-path stereowipe.db --judge-name gemini_rubric_v1
+```
+
+
+## Phase 3: Metrics and leaderboard snapshot
+
+Generate leaderboard snapshot from rubric evaluations:
+
+```bash
+python scripts/generate_leaderboard.py --db-path stereowipe.db --judge-name gemini_rubric_v1
+```
+
+Programmatic metrics usage:
+
+```bash
+python -c "from metrics import StereoWipeMetrics; m=StereoWipeMetrics(); print(m.regional_disagreement_rate())"
+```
+
+## Phase 4: Import + validation hardening
+
+Validate rubric file before running evaluations:
+
+```bash
+python scripts/validate_rubric.py --rubric-path data/rubric.json
+```
+
+Import responses from a JSON file (if responses were collected elsewhere):
+
+```bash
+python scripts/import_responses.py --db-path stereowipe.db --file data/model_responses/Jules.json --model jules --provider import
+```
