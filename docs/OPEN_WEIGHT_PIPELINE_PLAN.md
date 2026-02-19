@@ -4,23 +4,17 @@ This document replaces ambiguous "demo vs production" assumptions with an execut
 
 ## 1) Model Evaluation Scope (Open-Weight First)
 
-Target model set (10 models):
+Target model set (free-tier focused, 4 models):
 
 1. DeepSeek V3.2
-2. Llama 4 Scout
-3. Llama 4 Maverick
-4. GLM-4.7
-5. Kimi K2.5
-6. Qwen3-235B
-7. Gemma 3 12B
-8. Phi-4
-9. Mistral Large 2
-10. DeepSeek R1 Distill Llama 70B
+2. DeepSeek R1 Distill Llama 70B
+3. Gemma 3 12B
+4. Phi-4
 
 ### Why this set
-- Lower-cost inference via Together AI / Fireworks / provider APIs.
-- Reproducible benchmark setup that external reviewers can rerun.
-- Architecture diversity (MoE, dense, distilled).
+- Free-tier access availability across DeepSeek and Hugging Face endpoints.
+- Strong quality/price tradeoff for initial benchmark runs.
+- Includes one strong reasoner (R1 distill) and two lightweight research baselines (Gemma/Phi).
 
 ## 2) Prompt Dataset (100 prompts)
 
@@ -95,7 +89,7 @@ These should coexist with legacy SR/SSS/WOSI during migration for continuity.
 ## 7) Operational Workflow (Weekly)
 
 1. Import/verify prompt set in DB.
-2. Collect model responses for all 100 prompts × 10 models.
+2. Collect model responses for all 100 prompts × active free-tier models.
 3. Run rubric-based judge over all responses.
 4. Publish snapshot metrics to `leaderboard_snapshots`.
 5. Continuously collect arena votes + demographics.

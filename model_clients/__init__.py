@@ -8,16 +8,11 @@ from .together import TogetherClient
 
 # model_name -> (provider, remote_model_id)
 MODEL_REGISTRY: Dict[str, Tuple[str, str]] = {
-    "deepseek-v3.2": ("together", "deepseek-ai/DeepSeek-V3.2"),
-    "llama-4-scout": ("together", "meta-llama/Llama-4-Scout"),
-    "llama-4-maverick": ("together", "meta-llama/Llama-4-Maverick"),
-    "glm-4.7": ("deepseek", "zhipuai/GLM-4.7"),
-    "kimi-k2.5": ("deepseek", "moonshotai/Kimi-K2.5"),
-    "qwen3-235b": ("together", "Qwen/Qwen3-235B-A22B"),
-    "gemma-3-12b": ("huggingface", "google/gemma-3-12b-it"),
+    # Free-tier focused model set
+    "deepseek-v3.2": ("deepseek", "deepseek-chat"),
+    "deepseek-r1-distill-llama-70b": ("deepseek", "deepseek-reasoner"),
     "phi-4": ("huggingface", "microsoft/phi-4"),
-    "mistral-large-2": ("deepseek", "mistralai/Mistral-Large-2"),
-    "deepseek-r1-distill-llama-70b": ("together", "deepseek-ai/DeepSeek-R1-Distill-Llama-70B"),
+    "gemma-3-12b": ("huggingface", "google/gemma-3-12b-it"),
 }
 
 

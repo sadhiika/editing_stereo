@@ -332,3 +332,20 @@ Import responses from a JSON file (if responses were collected elsewhere):
 ```bash
 python scripts/import_responses.py --db-path stereowipe.db --file data/model_responses/Jules.json --model jules --provider import
 ```
+
+
+## Active free-tier model set
+
+The response collection pipeline is currently configured to run only these models:
+
+- `deepseek-v3.2`
+- `deepseek-r1-distill-llama-70b`
+- `gemma-3-12b`
+- `phi-4`
+
+Required environment variables for this set:
+
+```bash
+export DEEPSEEK_API_KEY=...   # for DeepSeek models
+export HF_TOKEN=...           # for Hugging Face models
+```
