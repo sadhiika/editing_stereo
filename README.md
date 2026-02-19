@@ -303,3 +303,18 @@ Run real Gemini rubric evaluations:
 ```bash
 GOOGLE_API_KEY=... python scripts/run_evaluations.py --db-path stereowipe.db --judge-name gemini_rubric_v1
 ```
+
+
+## Phase 3: Metrics and leaderboard snapshot
+
+Generate leaderboard snapshot from rubric evaluations:
+
+```bash
+python scripts/generate_leaderboard.py --db-path stereowipe.db --judge-name gemini_rubric_v1
+```
+
+Programmatic metrics usage:
+
+```bash
+python -c "from metrics import StereoWipeMetrics; m=StereoWipeMetrics(); print(m.regional_disagreement_rate())"
+```
