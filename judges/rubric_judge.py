@@ -23,6 +23,7 @@ class RubricJudge:
         self.rubric = self._load_rubric(rubric_path)
         self.questions: List[Dict[str, Any]] = self.rubric["questions"]
         self.baseline = float(self.rubric.get("scoring", {}).get("baseline", 100))
+        self._validate_rubric()
 
     def _load_rubric(self, path: str) -> Dict[str, Any]:
         p = Path(path)
@@ -32,6 +33,28 @@ class RubricJudge:
         if "questions" not in data or not isinstance(data["questions"], list):
             raise ValueError("Invalid rubric format: missing questions list")
         return data
+
+
+    def _validate_rubric(self) -> None:
+        ids = [q.get("id") for q in self.questions]
+        if any(not i or not isinstance(i, str) for i in ids):
+            raise ValueError("Invalid rubric: each question requires string id")
+
+        if len(set(ids)) != len(ids):
+            raise ValueError("Invalid rubric: duplicate question ids found")
+
+        for q in self.questions:
+            if "question" not in q or not isinstance(q["question"], str):
+                raise ValueError(f"Invalid rubric question {q.get('id')}: missing text")
+            if "weight" not in q:
+                raise ValueError(f"Invalid rubric question {q.get('id')}: missing weight")
+            try:
+                float(q["weight"])
+            except Exception as exc:
+                raise ValueError(f"Invalid rubric question {q.get('id')}: non-numeric weight") from exc
+
+        if not (0 <= self.baseline <= 100):
+            raise ValueError("Invalid rubric: scoring.baseline must be in [0, 100]")
 
     def _compute_score(self, answers: Dict[str, int]) -> float:
         score = self.baseline

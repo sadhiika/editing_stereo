@@ -318,3 +318,17 @@ Programmatic metrics usage:
 ```bash
 python -c "from metrics import StereoWipeMetrics; m=StereoWipeMetrics(); print(m.regional_disagreement_rate())"
 ```
+
+## Phase 4: Import + validation hardening
+
+Validate rubric file before running evaluations:
+
+```bash
+python scripts/validate_rubric.py --rubric-path data/rubric.json
+```
+
+Import responses from a JSON file (if responses were collected elsewhere):
+
+```bash
+python scripts/import_responses.py --db-path stereowipe.db --file data/model_responses/Jules.json --model jules --provider import
+```
